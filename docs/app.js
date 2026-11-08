@@ -7,10 +7,11 @@
   // -------------------------------------------------------------------------
   // 計算の前提
   // -------------------------------------------------------------------------
+  // 検討時の費用は「1人が1回訪問する場合」の金額を出す(人数・回数は「考え方のポイント」で案内する)
   const CONSIDER = {
-    PEOPLE: 2,                 // 親1人＋子1人で行く想定
-    VISITS: 2,                 // 現地訪問(オープンスクールなど)と受検の2回
-    HOTEL_PER_ROOM_NIGHT: 14463, // ビジネスホテルの平均客室単価(東京商工リサーチ 2025年度)。親子で1室
+    PEOPLE: 1,                 // 1人分
+    VISITS: 1,                 // 1回の訪問分
+    HOTEL_PER_ROOM_NIGHT: 14463, // ビジネスホテルの平均客室単価(東京商工リサーチ 2025年度)。1人1室
     EXAM_FEE: 2200,            // 受検の費用(公立高校の受検料の目安・子1人1回)
   };
   const AFTER = {
@@ -22,7 +23,6 @@
   const ROAD_FACTOR = 1.25;   // 道路距離 ≒ 直線距離 × 1.25 と仮定
   const FUEL_ECONOMY = 13.3;  // 自家用乗用車(ガソリン)の実際の平均燃費 km/L(国土交通省 自動車燃料消費量調査 2025年度)
   const GAS_PRICE = 170;      // レギュラーガソリン全国平均 円/L(資源エネルギー庁 石油製品価格調査 2026年8月17日 169.8円)
-  const RETURN_LABELS = { gw: "GW", summer: "夏休み", winter: "冬休み", spring: "春休み" };
   const MODE_LABELS = { car: "車", plane: "飛行機", jr: "JR" };
 
   // 都道府県代表点(県庁所在地付近)。お住まいの地域の位置として使用。
@@ -68,7 +68,9 @@
     return R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
   }
   const schoolPoint = (s) => [s.lat, s.lng];
-  const homePoint = (pref) => PREF_CENTROIDS[pref];
+  // home: 都道府県名(留学後)、または地図で選んだ地点 {pref, lat, lng}(検討時)
+  const homePoint = (home) => (typeof home === "string" ? PREF_CENTROIDS[home] : [home.lat, home.lng]);
+  const homePrefOf = (home) => (typeof home === "string" ? home : home.pref);
   const round10 = (n) => Math.round(n / 10) * 10;
 
   function jrFare(km) {
@@ -86,8 +88,8 @@
 
   const planeFare = (km) => round10(PLANE_YIELD * km);
 
-  function landmass(pref) {
-    const i = PREF_LIST.indexOf(pref);
+  function landmass(prefOrHome) {
+    const i = PREF_LIST.indexOf(homePrefOf(prefOrHome));
     if (i === 0) return "北海道";
     if (i === 46) return "沖縄";
     return "本州・四国・九州";
@@ -134,16 +136,17 @@
       ] };
     }
     const oneWay = jrFare(haversine(homePoint(homePref), schoolPoint(school)));
-    return { perPerson: true, legs: [{ label: "往復交通費(JR)", oneWay, desc: `1人片道${yenPlain(oneWay)}` }] };
+    return { perPerson: true, legs: [{ label: "JR運賃", oneWay, desc: `1人片道${yenPlain(oneWay)}` }] };
   }
 
   // people: 人数(車は1台分として扱う)、trips: 往復の回数、tripText: 回数の内訳の表示
   function calcTransport(mode, homePref, homeAirport, school, people, trips, tripText) {
     const t = tripLegs(mode, homePref, homeAirport, school);
     const n = t.perPerson ? people : 1;
-    const mulText = ` × 往復${n > 1 ? ` × ${n}人` : ""} × ${trips}回${tripText}`;
+    const mulText = ` × 往復${n > 1 ? ` × ${n}人` : ""}${trips > 1 ? ` × ${trips}回${tripText}` : ""}`;
+    const unit = t.perPerson ? (n > 1 ? `(${n}人・往復)` : "(1人・往復)") : "(車1台・往復)";
     const items = t.legs.map((l) => ({
-      label: l.label,
+      label: l.label + unit,
       amount: l.oneWay * 2 * n * trips,
       sub: l.fixedDesc || l.desc + mulText,
     }));
@@ -151,8 +154,8 @@
   }
 
   function calcConsider(homePref, homeAirport, school, mode, nights) {
-    const t = calcTransport(mode, homePref, homeAirport, school, CONSIDER.PEOPLE, CONSIDER.VISITS, "(現地訪問・受検)");
-    if (mode === "car") t.items[0].sub += "。車1台で親子2人が移動する想定です";
+    const t = calcTransport(mode, homePref, homeAirport, school, CONSIDER.PEOPLE, CONSIDER.VISITS, "");
+    if (mode === "car") t.items[0].sub += "。車は1台分の金額のため、乗る人数が増えても変わりません";
     const lodging = nights * CONSIDER.HOTEL_PER_ROOM_NIGHT * CONSIDER.VISITS;
     const exam = CONSIDER.EXAM_FEE;
     return { school, mode, nights, transport: t, lodging, exam, subtotal: t.total + lodging + exam };
@@ -165,17 +168,15 @@
     return 0; // in_cost / unknown は加算しない
   }
 
-  function calcAfter(homePref, homeAirport, school, returnKeys, mode) {
+  function calcAfter(homePref, homeAirport, school, mode) {
     const km = haversine(homePoint(homePref), schoolPoint(school));
-    const returnLabel = returnKeys.map((k) => RETURN_LABELS[k]).join("・");
-    // 帰省は生徒1人分(車の場合は車1台で往復1回分)
-    const ret = calcTransport(mode, homePref, homeAirport, school, 1, returnKeys.length, `(${returnLabel})`);
+    // 帰省は1回分: 生徒1人の往復(車の場合は車1台の往復)
+    const ret = calcTransport(mode, homePref, homeAirport, school, 1, 1, "");
     const returnCost = ret.total;
     const missed = missedMeals(school.meal);
     const pocket = AFTER.POCKET_BASE + AFTER.MEAL_UNIT * missed;
-    const monthlyTotal = (school.monthly || 0) + pocket;
-    const firstYearTotal = (school.firstYear || 0) + monthlyTotal * 12 + returnCost;
-    return { school, km, mode, ret, returnCost, missed, pocket, monthlyTotal, firstYearTotal };
+    const monthlyTotal = (school.monthly || 0) + pocket;   // 画面には出さない(記録用)
+    return { school, km, mode, ret, returnCost, missed, pocket, monthlyTotal };
   }
 
   // -------------------------------------------------------------------------
@@ -196,11 +197,17 @@
   function notesBox(title, items) {
     return `<section class="info-box is-notes"><h4>${title}</h4><ul>${items.map((t) => `<li>${t}</li>`).join("")}</ul></section>`;
   }
+  // 検討時: 1人・1回分の金額を、自分の場合に置きかえて考えるためのポイント
+  function pointsBox() {
+    const pts = [
+      ["遠いほど、宿泊日数が増えます", "お住まいの地域から遠い学校や、乗りかえが多い地域では、日帰りが難しく1〜2泊になることがあります。"],
+      ["何人で行きますか？", "金額は1人分です。保護者と2人で行く場合は、交通費・宿泊費がおよそ2倍になります(車は1台分の金額なので、乗る人数が増えても変わりません)。"],
+      ["何回行きますか？", "オープンスクール(学校見学)、受検、入寮審査(面接)など、現地に行く回数の分だけかかります。たとえば、オープンスクール1回と受検1回なら2回分です。"],
+    ];
+    return `<section class="info-box is-points"><h4>考え方のポイント</h4><ol>${pts.map(([t, d]) => `<li><strong>${t}</strong><span>${d}</span></li>`).join("")}</ol></section>`;
+  }
   function checklistBox(items) {
     return `<section class="info-box is-checklist"><h4>学校への確認事項</h4><ul>${items.map((t) => `<li>${t}</li>`).join("")}</ul></section>`;
-  }
-  function totalPanel(label, amount, note) {
-    return `<div class="total-panel"><span class="total-label">${label}</span><span class="total-value">${yen(amount)}</span>${note ? `<span class="total-note">${note}</span>` : ""}</div>`;
   }
 
   // -------------------------------------------------------------------------
@@ -232,8 +239,9 @@
   let AIRPORT_LIST = [];
   const byId = (id) => SCHOOLS.find((s) => s.id === id);
 
-  function defaultAirport(pref) {
-    const c = PREF_CENTROIDS[pref];
+  function defaultAirport(home) {
+    const pref = homePrefOf(home);
+    const c = homePoint(home);
     const main = AIRPORT_LIST.filter((a) => a.dest);
     const inPref = main.filter((a) => a.pref === pref);
     const pool = inPref.length ? inPref : main.filter((a) => landmass(a.pref) === landmass(pref));
@@ -241,7 +249,7 @@
   }
 
   // -------------------------------------------------------------------------
-  // 学校ピッカー
+  // 学校ピッカー(留学後の志望校。都道府県ごとの一覧＋検索)
   // -------------------------------------------------------------------------
   function setupPicker({ listId, searchId, chipsId, multiple, max, onChange }) {
     const list = $(listId), search = $(searchId), chips = $(chipsId);
@@ -249,7 +257,9 @@
     const name = listId + "-school";
     let selected = [];
 
-    const groups = PREF_LIST.map((pref) => ({ pref, schools: SCHOOLS.filter((s) => s.pref === pref) }))
+    // 都道府県ごとにまとめ、都道府県の中はあいうえお順(学校名の読みがな順)に並べる
+    const byKana = (a, b) => a.kana.localeCompare(b.kana, "ja");
+    const groups = PREF_LIST.map((pref) => ({ pref, schools: SCHOOLS.filter((s) => s.pref === pref).sort(byKana) }))
       .filter((g) => g.schools.length);
     list.innerHTML = groups.map((g) => `
       <details class="pref-group" data-pref="${esc(g.pref)}">
@@ -392,25 +402,217 @@
   }
 
   // -------------------------------------------------------------------------
+  // 検討時: 地図で「お住まいの場所」と「志望校(交通手段・宿泊日数)」を選ぶ
+  // -------------------------------------------------------------------------
+  const MAX_CONSIDER = 3;
+  const MAP_GUIDES = {
+    home: "地図の上で、お住まいの場所をクリック(タップ)してください。",
+    school: "志望校のピン(青い丸)をクリック(タップ)して、交通手段と宿泊日数を選び「この学校を選ぶ」を押してください。3校まで選べます。",
+  };
+
+  function setupConsiderMap() {
+    const state = { step: "home", home: null, ids: [], mode: {}, nights: {}, map: null, loading: null };
+
+    function setStep(step) {
+      state.step = step;
+      document.querySelectorAll(".map-step").forEach((b) => {
+        const on = b.dataset.step === step;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      $("c-map-guide").textContent = MAP_GUIDES[step];
+      if (step === "home") closeSchool();
+    }
+
+    const availFor = (s) => (state.home ? modeAvailability(state.home, s) : { jr: null, car: null, plane: null });
+    const firstMode = (a) => (a.jr ? "plane" : "jr");
+    function fixModes() {
+      state.ids.forEach((id) => {
+        const a = availFor(byId(id));
+        if (!state.mode[id] || a[state.mode[id]]) state.mode[id] = firstMode(a);
+      });
+    }
+
+    async function onMapClick(lat, lng) {
+      if (state.step !== "home") return;
+      $("c-home-display").textContent = "場所を確認しています…";
+      try {
+        const r = await window.SimMap.prefAt(lat, lng);
+        if (!r || !r.pref) {
+          showError("c-home-error", "日本の陸地の上をクリック(タップ)してください。");
+          renderSummary();
+          return;
+        }
+        state.home = { pref: r.pref, lat, lng };
+        state.map.setHome(lat, lng);
+        showError("c-home-error", "");
+        fixModes();
+        renderSummary();
+        setStep("school");
+      } catch (e) {
+        showError("c-home-error", "場所を確認できませんでした。もう一度クリック(タップ)してください。");
+        renderSummary();
+      }
+    }
+
+    // ピンの吹き出し: 交通手段・宿泊日数を選んで「この学校を選ぶ」
+    function openSchool(s) {
+      if (state.step !== "school") setStep("school");
+      const selected = state.ids.includes(s.id);
+      const avail = availFor(s);
+      let mode = selected ? state.mode[s.id] : firstMode(avail);
+      let nights = selected ? state.nights[s.id] : 0;
+      const el = document.createElement("div");
+      el.className = "pop";
+      const reasons = ["car", "plane", "jr"].map((m) => avail[m]).filter(Boolean);
+      el.innerHTML = `
+        <p class="pop-name">${esc(s.name)}</p>
+        <p class="pop-meta">${esc(s.pref)}・<a href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページ</a></p>
+        <p class="pop-label">交通手段</p>
+        <div class="pop-seg" data-kind="mode">${["car", "plane", "jr"].map((m) =>
+          `<button type="button" data-value="${m}" ${avail[m] ? "disabled" : ""}>${MODE_LABELS[m]}</button>`).join("")}</div>
+        ${reasons.length ? `<p class="pop-note">${reasons.map(esc).join("。")}。</p>` : ""}
+        ${!state.home ? '<p class="pop-note">お住まいの場所を選ぶと、使えない交通手段がわかります。</p>' : ""}
+        <p class="pop-label">宿泊日数 <span>(1回の訪問あたり)</span></p>
+        <div class="pop-seg" data-kind="nights">${NIGHT_LABELS.map((l, i) => `<button type="button" data-value="${i}">${l}</button>`).join("")}</div>
+        <p class="pop-error" hidden></p>
+        <div class="pop-actions">
+          <button type="button" class="pop-add">${selected ? "この内容にする" : "この学校を選ぶ"}</button>
+          ${selected ? '<button type="button" class="pop-remove">選ぶのをやめる</button>' : ""}
+        </div>`;
+      const paint = () => {
+        el.querySelectorAll('[data-kind="mode"] button').forEach((b) => b.setAttribute("aria-pressed", b.dataset.value === mode ? "true" : "false"));
+        el.querySelectorAll('[data-kind="nights"] button').forEach((b) => b.setAttribute("aria-pressed", Number(b.dataset.value) === nights ? "true" : "false"));
+      };
+      el.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b || b.disabled) return;
+        const kind = b.parentElement.dataset.kind;
+        if (kind === "mode") { mode = b.dataset.value; paint(); return; }
+        if (kind === "nights") { nights = Number(b.dataset.value); paint(); return; }
+        if (b.classList.contains("pop-add")) {
+          if (!state.ids.includes(s.id) && state.ids.length >= MAX_CONSIDER) {
+            const err = el.querySelector(".pop-error");
+            err.textContent = `選べるのは${MAX_CONSIDER}校までです。ほかの学校を外してから選んでください。`;
+            err.hidden = false;
+            return;
+          }
+          if (!state.ids.includes(s.id)) state.ids.push(s.id);
+          state.mode[s.id] = mode;
+          state.nights[s.id] = nights;
+        } else if (b.classList.contains("pop-remove")) {
+          remove(s.id);
+        }
+        closeSchool();
+        update();
+      });
+      paint();
+      // 地図が広いときは地図の吹き出しに、スマホなど狭いときは地図のすぐ下に選ぶ欄を出す
+      if ($("c-map").clientWidth >= 560) {
+        $("c-pin-panel").hidden = true;
+        state.map.openPopup(s, el);
+      } else {
+        state.map.closePopup();
+        const panel = $("c-pin-panel");
+        panel.innerHTML = '<button type="button" class="pin-panel-close" aria-label="閉じる">×</button>';
+        panel.appendChild(el);
+        panel.hidden = false;
+        panel.querySelector(".pin-panel-close").addEventListener("click", closeSchool);
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function closeSchool() {
+      if (state.map) state.map.closePopup();
+      $("c-pin-panel").hidden = true;
+    }
+
+    function remove(id) {
+      state.ids = state.ids.filter((v) => v !== id);
+      delete state.mode[id];
+      delete state.nights[id];
+    }
+
+    function update() {
+      showError("c-school-error", "");
+      if (state.map) state.map.setSelected(state.ids);
+      renderSummary();
+    }
+
+    function renderSummary() {
+      $("c-home-display").textContent = state.home ? `${state.home.pref}(地図で選んだ場所)` : "まだ選ばれていません";
+      const usesPlane = state.ids.some((id) => state.mode[id] === "plane");
+      $("c-selected").innerHTML = state.ids.length ? state.ids.map((id) => {
+        const s = byId(id);
+        return `
+          <div class="selected-item">
+            <div class="selected-text">
+              <p class="selected-name">${esc(s.name)}</p>
+              <p class="selected-meta">交通手段: ${MODE_LABELS[state.mode[id]]}・宿泊: ${NIGHT_LABELS[state.nights[id]]}</p>
+            </div>
+            <div class="selected-actions">
+              <button type="button" data-edit="${esc(id)}">変更</button>
+              <button type="button" data-remove="${esc(id)}" aria-label="${esc(s.name)}を外す">外す</button>
+            </div>
+          </div>`;
+      }).join("") + (usesPlane && state.home
+        ? `<p class="field-hint-block">出発する空港: ${esc(AIRPORTS[defaultAirport(state.home)].name)}(お住まいの場所から一番近い空港を自動で設定)</p>` : "")
+        : '<p class="summary-value">まだ選ばれていません</p>';
+    }
+
+    $("c-selected").addEventListener("click", (e) => {
+      const edit = e.target.getAttribute("data-edit"), rm = e.target.getAttribute("data-remove");
+      if (rm) { remove(rm); update(); }
+      if (edit && state.map) {
+        $("c-map").scrollIntoView({ behavior: "smooth", block: "center" });
+        openSchool(byId(edit));
+      }
+    });
+    document.querySelectorAll(".map-step").forEach((b) => b.addEventListener("click", () => setStep(b.dataset.step)));
+
+    function ensureMap() {
+      if (!state.loading) {
+        state.loading = window.SimMap.create($("c-map")).then((m) => {
+          state.map = m;
+          m.setSchools(SCHOOLS, openSchool);
+          m.onMapClick(onMapClick);
+          m.setSelected(state.ids);
+          return m;
+        }).catch(() => { $("c-map-error").hidden = false; state.loading = null; return null; });
+      }
+      return state.loading.then((m) => { if (m) m.refresh(); return m; });
+    }
+
+    setStep("home");
+    renderSummary();
+    return {
+      ensureMap,
+      get: () => ({ home: state.home, ids: state.ids.slice(), mode: (id) => state.mode[id], nights: (id) => state.nights[id] || 0 }),
+    };
+  }
+
+  // -------------------------------------------------------------------------
   // 画面切り替え
   // -------------------------------------------------------------------------
+  let considerMap = null;
   function showScreen(mode) {
     $("screen-select").hidden = !!mode;
+    $("intro").hidden = !!mode;
     $("screen-consider").hidden = mode !== "consider";
     $("screen-after").hidden = mode !== "after";
     try { history.replaceState(null, "", mode ? "#" + mode : location.pathname + location.search); } catch (e) { /* noop */ }
     window.scrollTo({ top: 0 });
+    if (mode === "consider" && considerMap) considerMap.ensureMap();
   }
 
   // -------------------------------------------------------------------------
   // 検討時の費用: 表示
   // -------------------------------------------------------------------------
-  function renderConsider(homePref, results) {
-    const total = results.reduce((sum, r) => sum + r.subtotal, 0);
+  function renderConsider(homeLabel, results) {
     const used = new Set(results.map((r) => r.mode));
     const lodgingSub = (nights) => nights === 0
       ? "日帰りのため宿泊費はかかりません"
-      : `1室(親子2人)${yenPlain(CONSIDER.HOTEL_PER_ROOM_NIGHT)} × ${nights}泊 × <strong>2回分(現地訪問1回・受検1回)</strong>`;
+      : `1人1泊${yenPlain(CONSIDER.HOTEL_PER_ROOM_NIGHT)} × ${nights}泊`;
 
     const blocks = results.map((r) => {
       const notes = [];
@@ -419,22 +621,22 @@
       return `
       <article class="school-block">
         <h4>${esc(r.school.name)}</h4>
-        <p class="school-meta">${esc(homePref)}から・交通手段: ${MODE_LABELS[r.mode]}・宿泊: ${NIGHT_LABELS[r.nights]}・<a href="${schoolUrl(r.school.id)}" target="_blank" rel="noopener">学校ページを見る</a></p>
+        <p class="school-meta">${esc(homeLabel)}から・交通手段: ${MODE_LABELS[r.mode]}・宿泊: ${NIGHT_LABELS[r.nights]}・<a href="${schoolUrl(r.school.id)}" target="_blank" rel="noopener">学校ページを見る</a></p>
         <dl class="rows">
           ${r.transport.items.map((it) => row(it.label, yen(it.amount), it.sub)).join("")}
-          ${row("宿泊費", yen(r.lodging), lodgingSub(r.nights))}
+          ${row("宿泊費(1人)", yen(r.lodging), lodgingSub(r.nights))}
           ${row("受検の費用", yen(r.exam), "受検料(子1人分)")}
-          ${row("小計", yen(r.subtotal), "", "is-subtotal")}
         </dl>
         ${notes.length ? `<p class="school-note">${notes.join("")}</p>` : ""}
       </article>`;
     }).join("");
 
     const notes = [
-      "親1人＋子1人で行く想定です。",
-      "交通費・宿泊費は、現地訪問(オープンスクールなど)と受検の<strong>2回分</strong>を計算しています。",
-      `宿泊費は、ビジネスホテルの平均客室単価(東京商工リサーチ調べ・2025年度：1室1泊${yenPlain(CONSIDER.HOTEL_PER_ROOM_NIGHT)})をもとに、親子で1室に泊まる想定です。`,
+      "交通費は<strong>1人分の往復</strong>の金額です(車の場合は、車1台で往復する高速代・ガソリン代)。",
+      "宿泊費は<strong>1人分</strong>です。選んだ宿泊日数の分を計算しています。",
+      `宿泊費は、ビジネスホテルの平均客室単価(東京商工リサーチ調べ・2025年度：1室1泊${yenPlain(CONSIDER.HOTEL_PER_ROOM_NIGHT)})をもとに、1人で1室に泊まる想定です。`,
       "宿泊費には食事代は含まれていません(素泊まりの想定です)。",
+      "受検の費用は、受検料(子1人分)の目安です。",
     ];
     if (used.has("jr")) notes.push("JRは、在来線の普通運賃の目安です。新幹線・特急を使う場合は高くなります。");
     if (used.has("plane")) notes.push(`航空券は、国内線の平均単価(国土交通省・2024年度：1人1kmあたり${PLANE_YIELD}円)をもとにした目安です。直行便がない場合や時期によって変わります。自宅から空港までの交通費は含みません。`);
@@ -442,13 +644,9 @@
 
     $("result-consider").innerHTML = `
       <h3 class="result-title">計算結果</h3>
+      <p class="result-lead">ここに出ている交通費・宿泊費は、<strong>1人が1回訪問するとき</strong>の目安です。交通費は<strong>1人分の往復</strong>の金額です。</p>
       ${blocks}
-      ${results.length > 1 ? `
-        <section class="summary-list">
-          <h4>選んだ学校ごとの小計</h4>
-          <dl class="rows">${results.map((r) => row(esc(r.school.name), yen(r.subtotal))).join("")}</dl>
-        </section>` : ""}
-      ${totalPanel(results.length > 1 ? `選んだ${results.length}校の合計` : "検討時にかかる費用の目安", total)}
+      ${pointsBox()}
       ${checklistBox([
         "入寮審査がある場合、現地に行く必要があるかオンラインか確認してください。",
         "訪問にかかる交通費は地方自治体から補助が出る場合があります。詳細は各学校へご確認ください。",
@@ -456,21 +654,23 @@
       ${notesBox("補足説明", notes)}`;
   }
 
-  function onSubmitConsider(picker, tf) {
-    const homePref = $("c-home").value;
-    const ids = picker.get();
-    showError("c-home-error", homePref ? "" : "現在の居住地を選んでください。");
-    showError("c-school-error", ids.length ? "" : "志望校を1校以上選んでください。");
-    if (!homePref || !ids.length) return;
-    const homeAirport = tf.airport();
-    const results = ids.map((id) => calcConsider(homePref, homeAirport, byId(id), tf.mode(id), tf.nights(id)));
-    renderConsider(homePref, results);
+  function onSubmitConsider(cm) {
+    const sel = cm.get();
+    showError("c-home-error", sel.home ? "" : "地図で、お住まいの場所を選んでください。");
+    showError("c-school-error", sel.ids.length ? "" : "地図で、志望校を1校以上選んでください。");
+    if (!sel.home || !sel.ids.length) {
+      $("c-map").scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const homeAirport = defaultAirport(sel.home);
+    const results = sel.ids.map((id) => calcConsider(sel.home, homeAirport, byId(id), sel.mode(id), sel.nights(id)));
+    renderConsider(`${sel.home.pref}(地図で選んだ場所)`, results);
     logUsage({
       type: "検討時",
-      home: homePref,
+      home: sel.home.pref,
       schools: results.map((r) => ({ name: r.school.name, mode: MODE_LABELS[r.mode], nights: NIGHT_LABELS[r.nights] })),
       airport: results.some((r) => r.mode === "plane") ? AIRPORTS[homeAirport].name : "",
-      total: results.reduce((s, r) => s + r.subtotal, 0),
+      total: results.reduce((sum, r) => sum + r.subtotal, 0),
     });
     const out = $("result-consider");
     out.hidden = false;
@@ -493,7 +693,51 @@
     return `${base}＋食事が出ない分 ${yenPlain(AFTER.MEAL_UNIT)}×${r.missed}食(${mealText})`;
   }
 
-  function renderAfter(homePref, r, returnKeys) {
+  // 初年度の費用: 金額は出さず、学校が公表している項目名だけを並べる
+  function firstYearBlock(s) {
+    const lead = s.firstYear != null
+      ? `入学から1年目に、次のような費用がかかります。各項目の金額は<a href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページ</a>でご確認ください。`
+      : `入学から1年目に、次のような費用がかかります。金額は公表資料に掲載がないため、${ASK}。`;
+    return `
+        <section class="detail-block">
+          <h5>初年度の費用</h5>
+          <p class="detail-lead">${lead}</p>
+          <ul class="item-tags">${s.fyItems.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+        </section>`;
+  }
+
+  // 月々の生活費: 学校ページの明細(項目名・金額・「食費込み」などの表示・注記)をそのまま並べる
+  function livingBlock(s) {
+    const lv = s.living;
+    if (s.monthly == null) {
+      const noteHtml = [...lv.items.filter((it) => it.desc).map((it) => it.desc), lv.notes]
+        .filter(Boolean).map((t) => `<p class="detail-note">${esc(t)}</p>`).join("");
+      return `
+        <section class="detail-block">
+          <h5>月々の生活費</h5>
+          <p class="detail-lead">公表資料に金額の掲載がないため、${ASK}。</p>
+          ${noteHtml}
+        </section>`;
+    }
+    const value = (v) => (v === "-円" ? "－" : esc(v));
+    const rowsHtml = lv.items.map((it) => {
+      const badges = it.badges.length ? `<span class="badges">${it.badges.map((b) => `<span class="badge">${esc(b)}</span>`).join("")}</span>` : "";
+      const desc = it.desc ? esc(it.desc) : "";
+      const sub = [badges, desc].filter(Boolean).join("<br>");
+      return row(esc(it.label), value(it.value), sub);
+    }).join("");
+    return `
+        <section class="detail-block">
+          <h5>月々の生活費 <span class="detail-src">(学校ページの記載)</span></h5>
+          <dl class="rows">
+            ${rowsHtml}
+            ${lv.total ? row("合計", value(lv.total), "", "is-subtotal") : ""}
+          </dl>
+          ${lv.notes ? `<p class="detail-note">${esc(lv.notes)}</p>` : ""}
+        </section>`;
+  }
+
+  function renderAfter(homePref, r) {
     const s = r.school;
     const missing = [];
     if (s.firstYear == null) missing.push("初年度の費用");
@@ -507,11 +751,12 @@
     if (missing.length) checklist.push(`${missing.join("・")}は公表資料に金額の掲載がありません。金額を確認してください。`);
 
     const retSub = r.ret.items.map((it) => `${it.label}: ${it.sub}`).join("<br>")
-      + (r.mode === "car" ? "<br>車1台で往復1回分として計算しています。" : "")
+      + (r.mode === "car" ? "<br>車1台で往復する1回分の金額です。" : "<br>生徒1人が往復する1回分の金額です。")
       + ((r.mode === "jr" && s.ferry) || (r.mode === "plane" && s.planeFerry) ? "<br>島へ渡るフェリー代は含みません。" : "");
     const notes = [
+      "授業料の無償化(国の「高等学校等就学支援金」)を受けるには、<strong>申請が必要</strong>です。申請の方法は、入学後に学校から案内があります。",
       "修学旅行の有無などは含まれていません。",
-      r.mode === "car" ? "帰省費は、車1台で往復1回分の高速代・ガソリン代の概算です。" : "帰省費は1人分の公共交通機関の交通費の概算です。",
+      r.mode === "car" ? "帰省費は、車1台で往復する<strong>1回分</strong>の高速代・ガソリン代の概算です。帰省する回数の分だけかかります。" : "帰省費は、生徒1人が往復する<strong>1回分</strong>の交通費の概算です。帰省する回数の分だけかかります。",
       "冬は暖房などで光熱費が高くなる傾向があります。",
       `食事が一部出ない場合は「一食${AFTER.MEAL_UNIT}円※ × 出ない食事分」をお小遣いに加算しています。`,
       "※出ない食事を自炊で賄う場合の想定額300円と、外食で賄う場合の想定額1200円の中央値で設定しています。",
@@ -525,15 +770,25 @@
       <article class="school-block">
         <h4>${esc(s.name)}</h4>
         <p class="school-meta">${esc(homePref)}から約${fmt(r.km)}km(直線距離)・<a href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページを見る</a></p>
-        <dl class="rows">
-          ${row("初年度の費用", s.firstYear != null ? yen(s.firstYear) : ASK, "入学金・授業料・制服・教科書など")}
-          ${row("月々の生活費", s.monthly != null ? `${yen(s.monthly)}<span class="unit">/月</span>` : ASK, "寮費・食費・光熱費など(学校が公表している金額)")}
-          ${row("お小遣い", `${yen(r.pocket)}<span class="unit">/月</span>`, pocketSub(r))}
-          ${row(`帰省費(${MODE_LABELS[r.mode]})`, `${yen(r.returnCost)}<span class="unit">/年</span>`, retSub)}
-        </dl>
+        ${livingBlock(s)}
+        <section class="detail-block">
+          <dl class="rows">
+            ${row("お小遣い", `${yen(r.pocket)}<span class="unit">/月</span>`, pocketSub(r))}
+          </dl>
+        </section>
       </article>
-      ${totalPanel("1年目にかかる費用の目安", r.firstYearTotal,
-        `初年度の費用＋(月々の生活費＋お小遣い)×12か月＋帰省費${missing.length ? `。${missing.join("・")}は未掲載のため含んでいません` : ""}`)}
+      <section class="school-block other-costs">
+        <h4>他に考えておくべき費用</h4>
+        <section class="detail-block">
+          <h5>帰省費(${MODE_LABELS[r.mode]})</h5>
+          <dl class="rows">
+            ${row("帰省1回分(往復)", yen(r.returnCost), retSub)}
+          </dl>
+          <p class="detail-lead">帰省のタイミングとして、次の時期が考えられます。帰省する回数の分だけかかります。</p>
+          <ul class="item-tags">${["GW", "夏休み", "冬休み", "春休み"].map((t) => `<li>${t}</li>`).join("")}</ul>
+        </section>
+        ${firstYearBlock(s)}
+      </section>
       ${checklistBox(checklist)}
       ${notesBox("補足説明", notes)}`;
   }
@@ -541,21 +796,19 @@
   function onSubmitAfter(picker, tf) {
     const homePref = $("a-home").value;
     const ids = picker.get();
-    const returnKeys = Array.from(document.querySelectorAll("#a-return input:checked")).map((el) => el.value);
     showError("a-home-error", homePref ? "" : "現在の居住地を選んでください。");
     showError("a-school-error", ids.length ? "" : "志望校を1校選んでください。");
-    showError("a-return-error", returnKeys.length ? "" : "帰省する時期を1つ以上選んでください。");
-    if (!homePref || !ids.length || !returnKeys.length) return;
+    if (!homePref || !ids.length) return;
     const homeAirport = tf.airport();
-    const r = calcAfter(homePref, homeAirport, byId(ids[0]), returnKeys, tf.mode(ids[0]));
-    renderAfter(homePref, r, returnKeys);
+    const r = calcAfter(homePref, homeAirport, byId(ids[0]), tf.mode(ids[0]));
+    renderAfter(homePref, r);
     logUsage({
       type: "留学後",
       home: homePref,
       schools: [{ name: r.school.name, mode: MODE_LABELS[r.mode], nights: "" }],
       airport: r.mode === "plane" ? AIRPORTS[homeAirport].name : "",
-      returns: returnKeys.map((k) => RETURN_LABELS[k]).join("・"),
-      total: r.firstYearTotal,
+      returns: "",
+      total: r.monthlyTotal,   // 留学後: 月々の生活費＋お小遣い(月額)
     });
     const out = $("result-after");
     out.hidden = false;
@@ -581,23 +834,19 @@
       return;
     }
 
-    fillPrefSelect("c-home");
     fillPrefSelect("a-home");
-    fillAirportSelect("c-airport");
     fillAirportSelect("a-airport");
-    const cTransport = createTransportForm({ prefix: "c", withNights: true });
     const aTransport = createTransportForm({ prefix: "a", withNights: false });
-    const cPicker = setupPicker({ listId: "c-list", searchId: "c-search", chipsId: "c-chips", multiple: true, max: 3,
-      onChange: (ids) => cTransport.setSchools(ids) });
     const aPicker = setupPicker({ listId: "a-list", searchId: "a-search", chipsId: "a-chips", multiple: false, max: 1,
       onChange: (ids) => aTransport.setSchools(ids) });
+    considerMap = setupConsiderMap();
 
     document.querySelectorAll(".mode-card").forEach((btn) =>
       btn.addEventListener("click", () => showScreen(btn.dataset.mode)));
     document.querySelectorAll("[data-back]").forEach((btn) =>
       btn.addEventListener("click", () => showScreen(null)));
 
-    $("form-consider").addEventListener("submit", (e) => { e.preventDefault(); onSubmitConsider(cPicker, cTransport); });
+    $("form-consider").addEventListener("submit", (e) => { e.preventDefault(); onSubmitConsider(considerMap); });
     $("form-after").addEventListener("submit", (e) => { e.preventDefault(); onSubmitAfter(aPicker, aTransport); });
 
     const hash = location.hash.replace("#", "");
