@@ -1,24 +1,26 @@
 /* Layout: 1カラム(最大720px)。白地に、区切りたい箇所だけメインカラーの淡色・#F5F5F5・アクセントの淡色を敷く。
    ブランド指定の配色(白地)に合わせ、ライトテーマ固定のデザインとする。 */
 :root {
-  --main: #00a1e9;          /* メインカラー */
-  --main-ink: #0075a8;      /* 白地の上でメインカラー系の文字に使う濃いめの青 */
-  --main-tint: #e5f6fd;     /* メインカラーの淡色 */
-  --accent: #fff000;        /* アクセントカラー */
-  --accent-edge: #d9cc00;
-  --accent-tint: #fffbd1;   /* アクセントカラーの淡色 */
-  --ink: #333333;           /* 文字 */
-  --ink-sub: #5d6870;       /* 補足文字(青み寄りのグレー) */
-  --line: #d5e3ea;
-  --soft: #f5f5f5;
+  /* 地域みらい留学のトンマナ(地域みらい留学/トンマナ.md、基準は c-mirai.jp/nyushi/)に合わせた配色 */
+  --main: #1941a0;          /* ネイビー(主色):見出し・ボタン・カードの枠線・番号バッジ */
+  --main-ink: #1941a0;
+  --deep: #15295a;          /* ディープネイビー */
+  --main-tint: #ebf8ff;     /* スカイ:面の背景 */
+  --accent: #ffef35;        /* イエロー:点で使うハイライト */
+  --accent-edge: #ffef35;
+  --accent-tint: #ebf8ff;   /* イエローは広い面に使わないため、淡色の面はスカイにそろえる */
+  --amber: #f6a811;         /* アンバー:小さなラベル */
+  --ink: #333333;           /* 本文 */
+  --ink-sub: #5d6870;       /* 補足文字 */
+  --line: #c9d6ec;          /* 区切り線(ネイビーの淡色) */
+  --soft: #ebf8ff;
   --paper: #ffffff;
   --error: #c62828;
 
-  /* 英数字はRoboto、日本語はNoto Sans JP(Robotoに日本語の字形がないため、日本語は自動でNoto Sans JPになる) */
-  --font-body: "Roboto", "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-  --font-display: var(--font-body);
+  --font-body: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  --font-display: "Zen Maru Gothic", var(--font-body);
 
-  --radius: 12px;
+  --radius: 10px;           /* カードの角丸は10px、ボタンはピル */
   color-scheme: light;
 }
 
@@ -546,7 +548,7 @@ main.wrap { display: grid; gap: 22px; padding-block: 18px 36px; }
 .sim-no {
   display: inline-grid; place-items: center; flex: none;
   width: 24px; height: 24px; border-radius: 50%;
-  background: var(--main); color: #fff; font-size: 0.8rem; font-family: "Roboto", sans-serif;
+  background: var(--main); color: #fff; font-size: 0.8rem; font-weight: 700;
 }
 .sim-card .select { width: 100%; min-height: 48px; font-size: 1rem; }
 .sim-card .select:disabled { background: var(--soft); color: var(--ink-sub); }
@@ -583,3 +585,52 @@ main.wrap { display: grid; gap: 22px; padding-block: 18px 36px; }
 .about-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
 .about-list li { display: grid; gap: 0; padding: 10px 14px; border-radius: 10px; background: var(--main-tint); font-size: 0.85rem; line-height: 1.6; }
 .about-list strong { color: var(--main-ink); }
+
+/* ===================== 地域みらい留学のトンマナに合わせる上書き(2026-11) ===================== */
+body { font-weight: 500; }
+strong { font-weight: 700; }
+.site-header { border-top: none; background: var(--main-tint); }
+.eyebrow { color: var(--main); letter-spacing: 0.1em; }
+.site-header h1 { font-family: var(--font-display); color: var(--main); letter-spacing: 0.1em; }
+.header-lead strong { background: linear-gradient(transparent 60%, var(--accent) 60%); color: var(--ink); }
+h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); letter-spacing: 0.1em; }
+.cost-section h5 { color: var(--main); letter-spacing: 0.05em; }
+
+/* カード=白地+ネイビーの細枠+角丸10px+影なし */
+.sim-card { border: 2px solid var(--main); border-radius: var(--radius); box-shadow: none; }
+.school-block { border: 1px solid var(--main); border-radius: var(--radius); }
+.select { border: 1px solid var(--main); border-radius: var(--radius); }
+.sim-no { background: var(--main); }
+.sim-foot { text-align: left; }
+.sim-foot a, .school-meta a, .row .row-sub a, .detail-lead a, .more summary { color: var(--main); }
+
+/* ボタン=ネイビー塗りのピル、白文字 Medium、字間0.1em */
+.cta {
+  background: var(--main); color: #fff;
+  border: none; border-radius: 999px;
+  font-family: var(--font-body); font-weight: 500; letter-spacing: 0.1em;
+}
+.cta:hover { background: var(--deep); filter: none; }
+
+/* ラベル: 毎月=ネイビー、最初だけ=イエロー(点で使う)、年に何回か=アンバー */
+.cost-tag { letter-spacing: 0.05em; }
+.cost-tag.is-monthly { background: var(--main); color: #fff; }
+.cost-tag.is-once { background: var(--accent); color: var(--ink); }
+.cost-tag.is-sometimes { background: var(--amber); color: #fff; border: none; }
+.cost-section { border-top: 1px solid var(--line); }
+.row { border-top: 1px dashed var(--line); }
+.row dd .zero { color: var(--main); }
+.item-tags li { background: var(--main-tint); color: var(--main); }
+
+/* 情報の箱:スカイの面(イエローを広い面に使わない) */
+.info-box.is-good, .info-box.is-checklist { background: var(--paper); border: 1px solid var(--main); }
+.info-box.is-good h4, .info-box.is-checklist h4 { color: var(--main); }
+.notice { background: var(--main-tint); }
+.about-list li { background: var(--main-tint); }
+.about-list strong { color: var(--main); }
+.site-footer { background: var(--main); color: #fff; border-radius: 0; }
+.site-footer p { color: #fff; }
+
+/* 長いURLや学校名で横にはみ出さないようにする */
+.result, .result > *, .school-block > *, .cost-section > *, .rows, .row > * { min-width: 0; }
+.row .row-sub, .detail-note, .more-list, .info-box li { overflow-wrap: anywhere; }
