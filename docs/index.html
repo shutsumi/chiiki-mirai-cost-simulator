@@ -4,160 +4,72 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>地域みらい留学費用シミュレーター</title>
-<meta name="description" content="地域みらい留学の検討時・留学後にかかる費用の目安を計算できるシミュレーターです。">
+<meta name="description" content="志望校を選ぶと、地域みらい留学で入学後に毎月かかる費用の目安がわかるシミュレーターです">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- BODY_START -->
 <header class="site-header">
   <div class="wrap">
     <p class="eyebrow">地域みらい留学</p>
-    <h1>地域みらい留学費用シミュレーター</h1>
+    <h1>費用シミュレーター</h1>
+    <p class="header-lead">志望校を選ぶと、入学後に<strong>毎月かかる費用</strong>の目安がわかります</p>
   </div>
 </header>
 
 <main class="wrap">
-  <!-- ===== このツールでわかること(最初の画面のみ表示) ===== -->
-  <section id="intro" class="intro" aria-labelledby="intro-title">
-    <h2 id="intro-title">このシミュレーターでわかること</h2>
-    <p>地域みらい留学では、住んでいる都道府県を離れて、別の地域の高校に進学します。「学校を見に行くには、いくらかかる？」「入学したら、毎月いくら必要？」といった、お金の疑問に答えるためのツールです。お住まいの都道府県と志望校を選ぶだけで、次の費用の目安がわかります。</p>
-    <ul class="intro-list">
-      <li><strong>検討時の費用</strong><span>オープンスクールや受検で学校に行くときの交通費・宿泊費など</span></li>
-      <li><strong>留学後の費用</strong><span>入学後にかかる月々の生活費・お小遣いや、帰省にかかる費用など</span></li>
+  <!-- ===== 入力(ファーストビューに置く) ===== -->
+  <form id="sim-form" class="sim-card" novalidate>
+    <div class="sim-step">
+      <label class="sim-label" for="pref"><span class="sim-no">1</span>学校のある都道府県</label>
+      <select id="pref" class="select">
+        <option value="">都道府県を選ぶ</option>
+      </select>
+    </div>
+    <div class="sim-step">
+      <label class="sim-label" for="school"><span class="sim-no">2</span>志望校</label>
+      <select id="school" class="select" disabled>
+        <option value="">先に都道府県を選んでください</option>
+      </select>
+      <p class="field-error" id="school-error" hidden></p>
+    </div>
+    <button type="submit" class="cta">毎月の費用を見る</button>
+    <p class="sim-foot">学校ページの公表額をもとにした目安です　<a href="https://www.google.com/maps/d/viewer?mid=1qO8L63-vnrjwoHju9phmhPPtWZ6QaXg" target="_blank" rel="noopener">学校の場所を地図で見る →</a></p>
+  </form>
+
+  <div id="result" class="result" hidden tabindex="-1"></div>
+
+  <!-- ===== このシミュレーターでわかること ===== -->
+  <section class="about" aria-labelledby="about-title">
+    <h2 id="about-title">このシミュレーターでわかること</h2>
+    <ul class="about-list">
+      <li><strong>毎月かかる費用</strong><span>寮費などの生活費、食事が出ない日の食費、お小遣い、月割りにした学校の費用</span></li>
+      <li><strong>入学のときにかかる費用</strong><span>入学金・制服・教科書など、最初にかかる費用の項目</span></li>
+      <li><strong>年に何回かかかる費用</strong><span>帰省の交通費など</span></li>
     </ul>
-    <p>ご家庭での話し合いや、お金の準備の参考にお使いください。</p>
   </section>
 
   <section class="notice" aria-labelledby="notice-title">
     <h2 id="notice-title">ご利用にあたって</h2>
     <ul>
-      <li>本シミュレーターで算出される金額は、公表資料をもとにした<strong>概算値</strong>です。実際の金額とは異なる場合がありますので、詳細は必ず各学校・自治体へご確認ください。</li>
-      <li>交通費・帰省費は概算です。</li>
-      <li>一部の費用については地方自治体から補助が出る場合もあります。詳細は各学校へご確認ください。</li>
+      <li>金額は、地域みらい留学の各学校ページに載っている金額をもとにした<strong>目安</strong>です<br>実際の金額は、学校・自治体にご確認ください</li>
+      <li>住まいの種類(寮・シェアハウスなど)や年度によって金額が変わるため、「〜」をつけて表示しています</li>
+      <li>自治体から補助が出る場合があります、くわしくは各学校へお問い合わせください</li>
+      <li>選んだ学校は、個人が特定されない形で記録し、サービスの改善に利用します</li>
     </ul>
-  </section>
-
-  <!-- ===== 最初の画面: モード選択 ===== -->
-  <section id="screen-select" class="mode-select" aria-labelledby="select-title">
-    <h2 id="select-title" class="section-title">どちらの費用を調べますか？</h2>
-    <div class="mode-cards">
-      <button type="button" class="mode-card" data-mode="consider">
-        <span class="mode-card-title">検討時の費用</span>
-        <span class="mode-card-sub">オープンスクールの交通費・宿泊費／受検にかかる費用など</span>
-      </button>
-      <button type="button" class="mode-card" data-mode="after">
-        <span class="mode-card-title">留学後の費用</span>
-        <span class="mode-card-sub">月々の生活費・お小遣い／帰省費・初年度の費用</span>
-      </button>
-    </div>
-  </section>
-
-  <!-- ===== 検討時の費用 ===== -->
-  <section id="screen-consider" class="screen" hidden aria-labelledby="consider-title">
-    <div class="screen-head">
-      <button type="button" class="back-link" data-back>← 費用の種類を選び直す</button>
-      <h2 id="consider-title" class="section-title">検討時の費用</h2>
-      <p class="section-sub">オープンスクールの交通費・宿泊費／受検にかかる費用など</p>
-    </div>
-
-    <form id="form-consider" class="form" novalidate>
-      <!-- 地図で選ぶ: お住まいの場所 → 志望校(ピンの吹き出しで交通手段・宿泊日数) -->
-      <div class="mapwrap">
-        <div class="maphead"><h3>地図で選ぶ</h3>
-          <a class="maplink" href="https://www.google.com/maps/d/viewer?mid=1qO8L63-vnrjwoHju9phmhPPtWZ6QaXg" target="_blank" rel="noopener">学校の情報を地図で見る →</a></div>
-        <div class="map-steps" role="group" aria-label="地図で選ぶもの">
-          <button type="button" class="map-step is-active" data-step="home" aria-pressed="true"><span class="map-step-no">1</span>お住まいの場所</button>
-          <button type="button" class="map-step" data-step="school" aria-pressed="false"><span class="map-step-no">2</span>志望校(1〜3校)</button>
-        </div>
-        <p class="map-guide" id="c-map-guide" aria-live="polite">地図の上で、お住まいの場所をクリック(タップ)してください。</p>
-        <div class="mapbox"><div id="c-map" class="map-canvas" role="application" aria-label="お住まいの場所と志望校を選ぶ地図"></div></div>
-        <div id="c-pin-panel" class="pin-panel" hidden></div>
-        <p class="map-fallback" id="c-map-error" hidden>地図を読み込めませんでした。通信環境を確認して、ページを再読み込みしてください。</p>
-      </div>
-
-      <div class="map-summary">
-        <div class="summary-item">
-          <p class="field-label">お住まいの場所</p>
-          <p class="summary-value" id="c-home-display">まだ選ばれていません</p>
-          <p class="field-error" id="c-home-error" hidden></p>
-        </div>
-        <div class="summary-item">
-          <p class="field-label">志望校 <span class="field-hint">ピンをクリックして、交通手段・宿泊日数を選びます</span></p>
-          <div id="c-selected" class="selected-list" aria-live="polite"><p class="summary-value">まだ選ばれていません</p></div>
-          <p class="field-error" id="c-school-error" hidden></p>
-        </div>
-        <ul class="small-notes">
-          <li>交通費は1人分の往復、宿泊費は1人分で計算します。宿泊日数は、1回の訪問で泊まる日数を選んでください。</li>
-          <li>現在の居住地と志望校の距離が離れている場合は、宿泊日数が増えることを想定してください。</li>
-          <li>地域みらい留学校のある地域は公共交通機関の本数が少ない場合がありますので、想定より移動時間がかかることがあります。</li>
-        </ul>
-      </div>
-
-      <button type="submit" class="cta">費用を計算する</button>
-      <p class="privacy-note">計算した条件(お住まいの都道府県・選んだ学校など)は、個人が特定されない形で記録し、サービスの改善に利用します。</p>
-    </form>
-
-    <div id="result-consider" class="result" hidden tabindex="-1"></div>
-  </section>
-
-  <!-- ===== 留学後の費用 ===== -->
-  <section id="screen-after" class="screen" hidden aria-labelledby="after-title">
-    <div class="screen-head">
-      <button type="button" class="back-link" data-back>← 費用の種類を選び直す</button>
-      <h2 id="after-title" class="section-title">留学後の費用</h2>
-      <p class="section-sub">月々の生活費・お小遣い／帰省費・初年度の費用</p>
-    </div>
-
-    <form id="form-after" class="form" novalidate>
-      <div class="field">
-        <label class="field-label" for="a-home">現在の居住地</label>
-        <select id="a-home" class="select">
-          <option value="">都道府県を選択してください</option>
-        </select>
-        <p class="field-error" id="a-home-error" hidden></p>
-      </div>
-
-      <fieldset class="field">
-        <legend class="field-label">志望校 <span class="field-hint">1校を選んでください(都道府県の中はあいうえお順)</span></legend>
-        <div class="picker" id="a-picker">
-          <input type="search" id="a-search" class="picker-search" placeholder="学校名・地域名で探す" autocomplete="off">
-          <div class="picker-list" id="a-list"></div>
-        </div>
-        <div class="chips" id="a-chips" aria-live="polite"></div>
-        <p class="field-error" id="a-school-error" hidden></p>
-      </fieldset>
-
-      <fieldset class="field" id="a-transport-field" hidden>
-        <legend class="field-label">帰省の交通手段 <span class="field-hint">帰省1回分の費用を計算します</span></legend>
-        <div class="transport-list" id="a-transport-list"></div>
-        <div class="field airport-field" id="a-airport-field" hidden>
-          <label class="field-label" for="a-airport">お住まいの地域の最寄り空港</label>
-          <select id="a-airport" class="select"></select>
-          <p class="field-hint-block">学校の最寄り空港は、自動で設定されます。</p>
-        </div>
-      </fieldset>
-
-      <button type="submit" class="cta">費用を計算する</button>
-      <p class="privacy-note">計算した条件(お住まいの都道府県・選んだ学校など)は、個人が特定されない形で記録し、サービスの改善に利用します。</p>
-    </form>
-
-    <div id="result-after" class="result" hidden tabindex="-1"></div>
   </section>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <p>学費・生活費のデータは「地域みらい留学」公式サイトの各校ページ(2026年9月29日時点)をもとにしています。</p>
+    <p>学費・生活費のデータは「地域みらい留学」公式サイトの各校ページ(2026年9月29日時点)をもとにしています</p>
     <p>一般財団法人 地域・教育魅力化プラットフォーム</p>
   </div>
 </footer>
 
 <script src="config.js"></script>
-<script src="mapselect.js"></script>
 <script src="app.js"></script>
-<!-- BODY_END -->
 </body>
 </html>

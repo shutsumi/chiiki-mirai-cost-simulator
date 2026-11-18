@@ -8,8 +8,6 @@ import json, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 schools = json.load(open(os.path.join(BASE, "data", "schools_cost_data.json"), encoding="utf-8"))
 meals = json.load(open(os.path.join(BASE, "data", "meal_provision.json"), encoding="utf-8"))
-transport = json.load(open(os.path.join(BASE, "data", "school_transport.json"), encoding="utf-8"))
-airports = json.load(open(os.path.join(BASE, "data", "airports.json"), encoding="utf-8"))
 details = json.load(open(os.path.join(BASE, "data", "fee_details.json"), encoding="utf-8"))
 kana = json.load(open(os.path.join(BASE, "data", "school_kana.json"), encoding="utf-8"))  # scripts/school_kana.py で生成
 
@@ -26,18 +24,17 @@ for s in schools:
         "label": kana[s["id"]]["label"], "kana": kana[s["id"]]["kana"],   # プルダウン用の表示名・読みがな
         "firstYear": positive_or_none(s["first_year_cost"]["total"]),   # None = 未掲載・調整中
         "monthly": positive_or_none(s["monthly_living_cost"]["total"]),  # None = 未掲載・調整中
-        "fyItems": details[s["id"]]["firstYearItems"],   # 初年度の費用: 項目名のみ表示
+        "fyItems": details[s["id"]]["firstYearItems"],   # 初年度の費用: 項目名(入学時の費用として表示)
+        # 初年度の費用の金額(授業料・修学旅行積立金・学校諸費を月割りにするために使う)
+        "fy": {b["label"]: b["amount"] for b in s["first_year_cost"]["breakdown"]
+               if b["label"] in details[s["id"]]["firstYearItems"] and isinstance(b["amount"], int) and b["amount"] > 0},
+        "fyNotes": details[s["id"]].get("firstYearNotes", ""),   # 学校ページの補足(町の補助など)
         "living": details[s["id"]]["living"],             # 月々の生活費: サイトの明細をそのまま表示
+        "housing": list(dict.fromkeys(v["housing_type"] for v in s["housing_variants"] if v["housing_type"] != "集団")),
         "meal": {"status": m["status"], "provided": m["provided_per_month"], "label": m["label"]},
-        "lat": transport[s["id"]]["lat"], "lng": transport[s["id"]]["lng"],
-        "airport": transport[s["id"]]["airport"],
-        "ferry": transport[s["id"]]["ferry"], "planeFerry": transport[s["id"]]["planeFerry"],
     })
 os.makedirs(os.path.join(BASE, "docs", "data"), exist_ok=True)
 json.dump(out, open(os.path.join(BASE, "docs", "data", "schools.json"), "w", encoding="utf-8"),
-          ensure_ascii=False, separators=(",", ":"))
-json.dump([{k: a[k] for k in ("code", "name", "pref", "lat", "lng", "dest")} for a in airports],
-          open(os.path.join(BASE, "docs", "data", "airports.json"), "w", encoding="utf-8"),
           ensure_ascii=False, separators=(",", ":"))
 print("schools:", len(out), "/ firstYear未掲載:", sum(1 for o in out if o["firstYear"] is None),
       "/ monthly未掲載:", sum(1 for o in out if o["monthly"] is None))

@@ -526,3 +526,60 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 .pin-panel { position: relative; margin-top: 8px; padding: 12px 14px; border: 2px solid var(--main); border-radius: 11px; background: var(--paper); }
 .pin-panel .pop { padding-right: 24px; }
 .pin-panel-close { position: absolute; top: 6px; right: 8px; border: none; background: none; font-size: 1.2rem; line-height: 1; cursor: pointer; color: var(--ink-sub); padding: 4px; }
+
+/* ===================== v2(2026-11 内海):留学後の費用だけに絞った画面 ===================== */
+main.wrap { display: grid; gap: 22px; padding-block: 18px 36px; }
+.header-lead { margin: 6px 0 0; font-size: 0.95rem; line-height: 1.6; }
+.header-lead strong { color: var(--main-ink); }
+
+/* 入力カード(ファーストビューに置く、電卓のように「選んで押す」だけ) */
+.sim-card {
+  display: grid; gap: 14px;
+  padding: 18px;
+  border: 2px solid var(--main);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: 0 4px 0 var(--main-tint);
+}
+.sim-step { display: grid; gap: 6px; }
+.sim-label { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
+.sim-no {
+  display: inline-grid; place-items: center; flex: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--main); color: #fff; font-size: 0.8rem; font-family: "Roboto", sans-serif;
+}
+.sim-card .select { width: 100%; min-height: 48px; font-size: 1rem; }
+.sim-card .select:disabled { background: var(--soft); color: var(--ink-sub); }
+.sim-foot { margin: 0; font-size: 0.78rem; line-height: 1.7; color: var(--ink-sub); text-align: center; }
+.sim-foot a { color: var(--main-ink); white-space: nowrap; }
+
+/* 結果 */
+.school-name { margin: 0; font-size: 1.15rem; line-height: 1.5; }
+.cost-section { display: grid; gap: 6px; padding-top: 12px; border-top: 2px solid var(--main-tint); }
+.cost-section:first-of-type { border-top: none; padding-top: 0; }
+.cost-section h4 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+.cost-section h5 { margin: 8px 0 0; font-size: 0.85rem; color: var(--ink-sub); }
+.cost-tag { flex: none; font-size: 0.72rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+.cost-tag.is-monthly { background: var(--main); color: #fff; }
+.cost-tag.is-once { background: var(--accent); color: var(--ink); }
+.cost-tag.is-sometimes { background: var(--soft); color: var(--ink); border: 1px solid var(--line); }
+.row dd .zero { color: var(--main-ink); font-size: 1.05rem; }
+.row .row-sub a { color: var(--main-ink); }
+.more { margin-top: 6px; }
+.more summary { cursor: pointer; color: var(--main-ink); font-size: 0.8rem; }
+.more-list { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 0.8rem; }
+.more-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 10px; color: var(--ink); }
+.more-list small { grid-column: 1 / -1; color: var(--ink-sub); }
+
+.info-box.is-good { background: var(--accent-tint); }
+.info-box.is-good li { padding-left: 1em; text-indent: -1em; }
+.info-box.is-good li::before { content: "・"; }
+.info-box.is-good .school-note { text-indent: 0; padding-left: 0; font-size: 0.8rem; color: var(--ink-sub); }
+.info-box.is-good .school-note::before { content: none; }
+.info-box.is-good .school-note strong { display: block; color: var(--ink); }
+
+.about { display: grid; gap: 8px; }
+.about h2 { margin: 0; font-size: 1rem; }
+.about-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.about-list li { display: grid; gap: 0; padding: 10px 14px; border-radius: 10px; background: var(--main-tint); font-size: 0.85rem; line-height: 1.6; }
+.about-list strong { color: var(--main-ink); }
