@@ -652,3 +652,9 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .route-btn small { display: block; font-size: .72rem; font-weight: 500; color: var(--ink-sub); }
 .route-btn:hover, .route-btn:focus-visible { background: var(--main-tint); }
 .route-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- フッターのリンク ---------- */
+.footer-links { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.site-footer .footer-links a { color: #fff; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
+.site-footer .footer-links a::after { content: " ↗"; font-size: .85em; }
+.site-footer .footer-links a:hover { opacity: .85; }
