@@ -157,7 +157,7 @@
     const notes = [`${parts.join("＋")}の合計です`];
     if (r.schoolMonthly.some((m) => m.tuition)) notes.push("授業料は、就学支援金で実質0円として計算しています");
     if (t.mealExcluded) notes.push("食事が出ない日の食費は、わからないため含んでいません");
-    notes.push("住まいの種類によって、これより高くなることがあります");
+    notes.push("住まいの種類や年度によって、金額は上下することがあります");
     return `<div class="total-box">
             <p class="total-label">毎月の合計</p>
             <p class="total-value">${range(t.lo, t.hi)}<span class="unit">/月</span></p>
