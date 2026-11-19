@@ -662,3 +662,5 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 /* ---------- 入学のときにかかる費用: 項目ごとの金額 ---------- */
 .once-rows .row { padding: 8px 0; }
 .once-rows dt { font-weight: 500; }
+.ask-link { font-size: .85rem; font-weight: 500; color: var(--main); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.ask-link:hover { opacity: .8; }

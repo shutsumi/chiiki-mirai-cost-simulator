@@ -199,7 +199,7 @@
         <section class="cost-section">
           <h4><span class="cost-tag is-once">最初だけ</span>入学のときにかかる費用</h4>
           <dl class="rows once-rows">
-            ${onceItems.map((t) => row(esc(t), s.fy && s.fy[t] ? yen(s.fy[t]) : '<span class="ask">学校ページで確認</span>')).join("")}
+            ${onceItems.map((t) => row(esc(t), s.fy && s.fy[t] ? yen(s.fy[t]) : `<a class="ask-link" href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページで確認 ↗</a>`)).join("")}
             ${row("家具・家電", '<span class="ask">ご家庭による</span>')}
             ${row("引っ越し", '<span class="ask">ご家庭による</span>')}
           </dl>
