@@ -190,14 +190,11 @@
           ${totalBox(r)}
           <dl class="rows">
             ${livingRow(s)}
+            ${extraRow(r)}
           </dl>
           ${r.schoolMonthly.length ? `
           <h5>学校に払う費用(月割り)</h5>
           <dl class="rows">${schoolMonthlyRows(r)}</dl>` : ""}
-          <h5>別途かかる可能性がある費用</h5>
-          <dl class="rows">
-            ${extraRow(r)}
-          </dl>
         </section>
 
         <section class="cost-section">
