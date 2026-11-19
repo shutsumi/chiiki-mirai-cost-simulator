@@ -121,7 +121,7 @@
     let mealNote;
     if (meal.status === "in_cost") mealNote = "自炊などの食費の目安は、寮費・生活費に含まれています";
     else if (r.missed == null) mealNote = "食事が出る曜日・回数は、学校へお問い合わせください";
-    else if (r.missed === 0) mealNote = `食事の提供：${esc(meal.label)}(食費はほぼかかりません)`;
+    else if (r.missed === 0) mealNote = "寮や下宿先で「食事が出ない日」が存在し、その日は各自で対応することになります<br>詳細は学校/自治体までお問い合わせください";
     else mealNote = `食事の提供：${esc(meal.label)}<br>食事が出ない日は、自炊や外食の食費がかかります`;
     return row("食事が出ない日の食費・お小遣い等", `<span class="ask">任意</span>${perMonth}`,
       `${mealNote}<br>お小遣いは、日用品・おやつ・休日の外出など、ご家庭で決める金額です`);
