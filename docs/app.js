@@ -115,14 +115,18 @@
     return row("寮費・生活費", `${yen(s.monthly)}〜${perMonth}`, subs.join("<br>") + details);
   }
 
-  function mealRow(r) {
+  // 食事が出ない日の食費・お小遣い等: 家庭や生徒で大きく変わるため金額は出さず「任意」とする(2026-11-19 内海の判断)
+  function extraRow(r) {
     const meal = r.school.meal;
-    if (meal.status === "in_cost") return row("食事が出ない日の食費", '<span class="ask">生活費に含まれています</span>', "自炊などの食費の目安が、寮費・生活費に含まれています");
-    if (r.missed == null) return row("食事が出ない日の食費", ASK, "食事が出る曜日・回数が、公表資料から確認できませんでした");
-    if (r.missed === 0) return row("食事が出ない日の食費", '<span class="ask">ほぼかかりません</span>', `食事の提供：${esc(meal.label)}`);
-    return row("食事が出ない日の食費", `${range(r.mealLow, r.mealHigh)}${perMonth}`,
-      `食事の提供：${esc(meal.label)}<br>出ない食事 約${r.missed}食 × 1食${AFTER.MEAL_LOW}円(自炊)〜${AFTER.MEAL_HIGH}円(ときどき外食)`);
+    let mealNote;
+    if (meal.status === "in_cost") mealNote = "自炊などの食費の目安は、寮費・生活費に含まれています";
+    else if (r.missed == null) mealNote = "食事が出る曜日・回数は、学校へお問い合わせください";
+    else if (r.missed === 0) mealNote = `食事の提供：${esc(meal.label)}(食費はほぼかかりません)`;
+    else mealNote = `食事の提供：${esc(meal.label)}<br>食事が出ない日は、自炊や外食の食費がかかります`;
+    return row("食事が出ない日の食費・お小遣い等", `<span class="ask">任意</span>${perMonth}`,
+      `${mealNote}<br>お小遣いは、日用品・おやつ・休日の外出など、ご家庭で決める金額です`);
   }
+
 
   function schoolMonthlyRows(r) {
     return r.schoolMonthly.map((m) => {
@@ -157,7 +161,7 @@
     const notes = [hasSchool ? "寮費・生活費＋学校に払う費用の月割りの合計です" : "寮費・生活費の金額です"];
     if (r.schoolMonthly.some((m) => m.tuition)) notes.push("授業料は、就学支援金で実質0円として計算しています");
     notes.push("住まいの種類や年度によって、金額は上下することがあります");
-    notes.push("このほか、食事が出ない日の食費やお小遣いが別途かかる可能性があります(下に目安を載せています)");
+    notes.push("このほか、食事が出ない日の食費・お小遣い等が別途かかる可能性があります");
     return `<div class="total-box">
             <p class="total-label">毎月の合計</p>
             <p class="total-value">${range(t.lo, t.hi)}<span class="unit">/月</span></p>
@@ -192,8 +196,7 @@
           <h5>別途かかる可能性がある費用</h5>
           <p class="detail-lead">ご家庭や生徒によって大きく変わるため、上の合計には含めていません</p>
           <dl class="rows">
-            ${mealRow(r)}
-            ${row("お小遣い", `${yen(AFTER.POCKET_BASE)}〜${perMonth}`, "日用品・おやつ・休日の外出など、ご家庭で決める金額の目安です")}
+            ${extraRow(r)}
           </dl>
         </section>
 
