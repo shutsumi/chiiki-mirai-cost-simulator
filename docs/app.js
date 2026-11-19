@@ -162,7 +162,6 @@
     const notes = [hasSchool ? "寮費・生活費＋学校に払う費用の月割りの合計です" : "寮費・生活費の金額です"];
     if (r.schoolMonthly.some((m) => m.tuition)) notes.push("授業料は、就学支援金で実質0円として計算しています");
     notes.push("住まいの種類や年度によって、金額は上下することがあります");
-    notes.push("このほか、食事が出ない日の食費・お小遣い等が別途かかる可能性があります");
     return `<div class="total-box">
             <p class="total-label">毎月の合計</p>
             <p class="total-value">${range(t.lo, t.hi)}<span class="unit">/月</span></p>
