@@ -126,3 +126,7 @@ cd docs
 python3 -m http.server 8000
 # ブラウザで http://localhost:8000 を開く
 ```
+
+## 公開のときの注意
+
+GitHub Pages は CSS・JS を最大10分ブラウザに保存させる。`docs/index.html` で `style.css?v=…`・`config.js?v=…`・`app.js?v=…` と版番号をつけているので、**CSS・JS を変えたら、この `v=` の値を上げてから push する**(上げ忘れると、開き直しても古い表示のままになる)
