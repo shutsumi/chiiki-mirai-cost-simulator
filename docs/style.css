@@ -634,3 +634,6 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 /* 長いURLや学校名で横にはみ出さないようにする */
 .result, .result > *, .school-block > *, .cost-section > *, .rows, .row > * { min-width: 0; }
 .row .row-sub, .detail-note, .more-list, .info-box li { overflow-wrap: anywhere; }
+
+/* 名前が長いので、スマホでは語の途中で切らず「シミュレーター」を次の行へ送る */
+.site-header h1 .h1-tail { display: inline-block; }
