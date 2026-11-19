@@ -1,6 +1,7 @@
 /* 地域みらい留学費用シミュレーター
  * 志望校を1校選ぶと、入学後に「毎月かかる費用」「入学のときにかかる費用」「年に何回かかかる費用」の目安を出す
- * 金額はすべて目安で、全部を足した合計は出さない(2026-10〜11月の座談会・打ち合わせで決めた方針)
+ * 金額はすべて目安、入学時・ときどきの費用まで足した総額は出さない(2026-10〜11月の座談会・打ち合わせで決めた方針)
+ * 毎月かかる費用だけは合計を出す(2026-11-19 内海の判断、合計がないとわかりづらいため)
  * 計算の前提は README.md の「計算ロジック」を参照
  */
 (function () {
@@ -136,6 +137,34 @@
     }).join("");
   }
 
+  // 毎月かかる費用の合計(授業料は就学支援金で実質0円として足さない)
+  function monthlyTotal(r) {
+    const s = r.school;
+    if (s.monthly == null) return null;
+    let lo = s.monthly + AFTER.POCKET_BASE, hi = lo;
+    if (r.mealLow != null) { lo += r.mealLow; hi += r.mealHigh; }
+    r.schoolMonthly.filter((m) => !m.tuition).forEach((m) => { lo += m.low; hi += m.high; });
+    return { lo, hi, mealExcluded: r.missed == null && s.meal.status !== "in_cost" };
+  }
+
+  function totalBox(r) {
+    const t = monthlyTotal(r);
+    if (!t) {
+      return `<div class="total-box is-na"><p class="total-label">毎月の合計</p><p class="total-na">寮費・生活費の金額が公表されていないため、合計は出せません</p></div>`;
+    }
+    const parts = ["寮費・生活費", r.mealLow != null ? "食事が出ない日の食費" : null, "お小遣い",
+      r.schoolMonthly.some((m) => !m.tuition) ? "学校に払う費用の月割り" : null].filter(Boolean);
+    const notes = [`${parts.join("＋")}の合計です`];
+    if (r.schoolMonthly.some((m) => m.tuition)) notes.push("授業料は、就学支援金で実質0円として計算しています");
+    if (t.mealExcluded) notes.push("食事が出ない日の食費は、わからないため含んでいません");
+    notes.push("住まいの種類によって、これより高くなることがあります");
+    return `<div class="total-box">
+            <p class="total-label">毎月の合計</p>
+            <p class="total-value">${range(t.lo, t.hi)}<span class="unit">/月</span></p>
+            <ul class="total-notes">${notes.map((n) => `<li>${n}</li>`).join("")}</ul>
+          </div>`;
+  }
+
   function render(r) {
     const s = r.school;
     const onceItems = (s.fyItems || []).filter((t) => !MONTHLY_ITEMS.includes(t));
@@ -153,6 +182,7 @@
 
         <section class="cost-section">
           <h4><span class="cost-tag is-monthly">毎月</span>毎月かかる費用の目安</h4>
+          ${totalBox(r)}
           <dl class="rows">
             ${livingRow(s)}
             ${mealRow(r)}
@@ -229,7 +259,7 @@
       type: "留学後",
       home: "",
       schools: [{ name: r.school.name, mode: "", nights: "" }],
-      total: (r.school.monthly || 0) + AFTER.POCKET_BASE,   // 記録用(画面には出さない): 寮費・生活費＋お小遣い
+      total: (() => { const t = monthlyTotal(r); return t ? round100(t.lo) : ""; })(),   // 記録用: 画面に出す毎月の合計の下限
     });
     const out = $("result");
     out.hidden = false;
