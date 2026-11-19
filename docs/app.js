@@ -198,8 +198,12 @@
 
         <section class="cost-section">
           <h4><span class="cost-tag is-once">最初だけ</span>入学のときにかかる費用</h4>
-          <ul class="item-tags">${onceItems.map((t) => `<li>${esc(t)}</li>`).join("")}<li>家具・家電</li><li>引っ越し</li></ul>
-          <p class="detail-lead">金額は<a href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページ</a>でご確認ください<br>支払いの時期は、合格後に学校から案内があります</p>
+          <dl class="rows once-rows">
+            ${onceItems.map((t) => row(esc(t), s.fy && s.fy[t] ? yen(s.fy[t]) : '<span class="ask">学校ページで確認</span>')).join("")}
+            ${row("家具・家電", '<span class="ask">ご家庭による</span>')}
+            ${row("引っ越し", '<span class="ask">ご家庭による</span>')}
+          </dl>
+          <p class="detail-lead">学校ページに載っている金額です、年度によって変わることがあります<br>支払いの時期は、合格後に学校から案内があります</p>
         </section>
 
         <section class="cost-section">

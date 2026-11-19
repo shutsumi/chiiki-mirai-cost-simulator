@@ -658,3 +658,7 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .site-footer .footer-links a { color: #fff; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
 .site-footer .footer-links a::after { content: " ↗"; font-size: .85em; }
 .site-footer .footer-links a:hover { opacity: .85; }
+
+/* ---------- 入学のときにかかる費用: 項目ごとの金額 ---------- */
+.once-rows .row { padding: 8px 0; }
+.once-rows dt { font-weight: 500; }
