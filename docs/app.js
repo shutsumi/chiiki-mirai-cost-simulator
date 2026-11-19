@@ -137,14 +137,15 @@
     }).join("");
   }
 
-  // 毎月かかる費用の合計(授業料は就学支援金で実質0円として足さない)
+  // 毎月かかる費用の合計 = 寮費・生活費＋学校に払う費用の月割り
+  // 食事が出ない日の食費・お小遣いは家庭や生徒で大きく変わるため足さない(2026-11-19 内海の判断)
+  // 授業料は就学支援金で実質0円として足さない
   function monthlyTotal(r) {
     const s = r.school;
     if (s.monthly == null) return null;
-    let lo = s.monthly + AFTER.POCKET_BASE, hi = lo;
-    if (r.mealLow != null) { lo += r.mealLow; hi += r.mealHigh; }
+    let lo = s.monthly, hi = lo;
     r.schoolMonthly.filter((m) => !m.tuition).forEach((m) => { lo += m.low; hi += m.high; });
-    return { lo, hi, mealExcluded: r.missed == null && s.meal.status !== "in_cost" };
+    return { lo, hi };
   }
 
   function totalBox(r) {
@@ -152,12 +153,11 @@
     if (!t) {
       return `<div class="total-box is-na"><p class="total-label">毎月の合計</p><p class="total-na">寮費・生活費の金額が公表されていないため、合計は出せません</p></div>`;
     }
-    const parts = ["寮費・生活費", r.mealLow != null ? "食事が出ない日の食費" : null, "お小遣い",
-      r.schoolMonthly.some((m) => !m.tuition) ? "学校に払う費用の月割り" : null].filter(Boolean);
-    const notes = [`${parts.join("＋")}の合計です`];
+    const hasSchool = r.schoolMonthly.some((m) => !m.tuition);
+    const notes = [hasSchool ? "寮費・生活費＋学校に払う費用の月割りの合計です" : "寮費・生活費の金額です"];
     if (r.schoolMonthly.some((m) => m.tuition)) notes.push("授業料は、就学支援金で実質0円として計算しています");
-    if (t.mealExcluded) notes.push("食事が出ない日の食費は、わからないため含んでいません");
     notes.push("住まいの種類や年度によって、金額は上下することがあります");
+    notes.push("このほか、食事が出ない日の食費やお小遣いが別途かかる可能性があります(下に目安を載せています)");
     return `<div class="total-box">
             <p class="total-label">毎月の合計</p>
             <p class="total-value">${range(t.lo, t.hi)}<span class="unit">/月</span></p>
@@ -185,12 +185,16 @@
           ${totalBox(r)}
           <dl class="rows">
             ${livingRow(s)}
-            ${mealRow(r)}
-            ${row("お小遣い", `${yen(AFTER.POCKET_BASE)}〜${perMonth}`, "日用品・おやつ・休日の外出など、ご家庭で決める金額の目安です")}
           </dl>
           ${r.schoolMonthly.length ? `
           <h5>学校に払う費用(月割り)</h5>
           <dl class="rows">${schoolMonthlyRows(r)}</dl>` : ""}
+          <h5>別途かかる可能性がある費用</h5>
+          <p class="detail-lead">ご家庭や生徒によって大きく変わるため、上の合計には含めていません</p>
+          <dl class="rows">
+            ${mealRow(r)}
+            ${row("お小遣い", `${yen(AFTER.POCKET_BASE)}〜${perMonth}`, "日用品・おやつ・休日の外出など、ご家庭で決める金額の目安です")}
+          </dl>
         </section>
 
         <section class="cost-section">
