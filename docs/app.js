@@ -72,7 +72,7 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const schoolUrl = (id) => "https://c-mirai.jp/schools/" + encodeURIComponent(id);
   const routeUrl = (s) => "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(s.name);
-  const ASK = '<span class="ask">学校へお問い合わせください</span>';
+  const ASK = '<span class="ask"><span class="nb">学校に</span><span class="nb">お問い合わせください</span></span>';
 
   function row(label, valueHtml, sub, cls) {
     return `<div class="row${cls ? " " + cls : ""}"><dt>${label}</dt><dd>${valueHtml}</dd>${sub ? `<p class="row-sub">${sub}</p>` : ""}</div>`;
@@ -123,7 +123,7 @@
     else if (r.missed == null) mealNote = "食事が出る日は、学校へお問い合わせください";
     else if (r.missed === 0) mealNote = "食事が出ない日は各自で対応します、詳細は学校/自治体へお問い合わせください";
     else mealNote = `食事の提供：${esc(meal.label)}`;
-    return row("食事が出ない日の食費・お小遣い等", `<span class="ask">任意</span>${perMonth}`,
+    return row('<span class="nb">食事が出ない日の</span><span class="nb">食費・お小遣い等</span>', `<span class="ask">任意</span>${perMonth}`,
       `${mealNote}<br>ご家庭や生徒によって変わるため、合計には含めていません`);
   }
 
@@ -182,7 +182,7 @@
     $("result").innerHTML = `
       <article class="school-block">
         <h3 class="school-name">${esc(s.name)}</h3>
-        <p class="school-meta"><a href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページを見る →</a></p>
+        <p class="school-meta"><a class="school-link-btn" href="${schoolUrl(s.id)}#cost" target="_blank" rel="noopener">学校ページの学費・生活費を見る ↗</a></p>
 
         <section class="cost-section">
           <h4><span class="cost-tag is-monthly">毎月</span>毎月かかる費用の目安</h4>
@@ -199,11 +199,12 @@
         <section class="cost-section">
           <h4><span class="cost-tag is-once">最初だけ</span>入学のときにかかる費用</h4>
           <dl class="rows once-rows">
-            ${onceItems.map((t) => row(esc(t), s.fy && s.fy[t] ? yen(s.fy[t]) : `<a class="ask-link" href="${schoolUrl(s.id)}" target="_blank" rel="noopener">学校ページで確認 ↗</a>`)).join("")}
+            ${onceItems.map((t) => row(esc(t), s.fy && s.fy[t] ? yen(s.fy[t]) : ASK)).join("")}
             ${row("家具・家電", '<span class="ask">ご家庭による</span>')}
             ${row("引っ越し", '<span class="ask">ご家庭による</span>')}
           </dl>
           <p class="detail-lead">学校ページに載っている金額です、年度によって変わることがあります<br>支払いの時期は、合格後に学校から案内があります</p>
+          <p class="school-link-wrap"><a class="school-link-btn" href="${schoolUrl(s.id)}#cost" target="_blank" rel="noopener">学校ページの学費・生活費を見る ↗</a></p>
         </section>
 
         <section class="cost-section">
@@ -226,7 +227,8 @@
       </section>
 
       <section class="info-box is-checklist">
-        <h4>学校に確認しておきたいこと</h4>
+        <h4>学校に確認しておきたいこと(例)</h4>
+        <p class="checklist-lead">確認したいことは、ご家庭によって変わります<br>たとえば、こんなことを学校に聞いておくと安心です</p>
         <ul>${checklist.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
       </section>`;
   }

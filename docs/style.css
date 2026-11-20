@@ -27,14 +27,14 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; font-size: 112.5%; }
 
 body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.75;
 }
 
@@ -59,7 +59,7 @@ button, input, select { font: inherit; color: inherit; }
 }
 .eyebrow {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: .85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--main-ink);
@@ -121,7 +121,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
   color: var(--main-ink);
 }
 .mode-card-title::after { content: " →"; }
-.mode-card-sub { font-size: 0.8rem; line-height: 1.6; color: var(--ink-sub); }
+.mode-card-sub { font-size: .85rem; line-height: 1.6; color: var(--ink-sub); }
 
 /* ---------- screen ---------- */
 .screen { display: grid; gap: 18px; }
@@ -149,7 +149,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 }
 .field { margin: 0; padding: 0; border: none; display: grid; gap: 8px; min-width: 0; }
 .field-label { font-weight: 700; font-size: 0.95rem; padding: 0; }
-.field-hint { font-weight: 400; font-size: 0.78rem; color: var(--ink-sub); margin-left: 6px; }
+.field-hint { font-weight: 400; font-size: .85rem; color: var(--ink-sub); margin-left: 6px; }
 .field-error { margin: 0; font-size: 0.82rem; color: var(--error); font-weight: 700; }
 
 .select, .picker-search {
@@ -181,7 +181,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 .pref-group > summary::-webkit-details-marker { display: none; }
 .pref-group > summary::after { content: "＋"; color: var(--main-ink); }
 .pref-group[open] > summary::after { content: "－"; }
-.pref-count { font-weight: 400; color: var(--ink-sub); font-size: 0.8rem; margin-left: 4px; }
+.pref-count { font-weight: 400; color: var(--ink-sub); font-size: .85rem; margin-left: 4px; }
 .school-option {
   display: flex;
   gap: 10px;
@@ -244,7 +244,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 .toggle input:checked + span::before { content: "✓ "; }
 .segment input:focus-visible + span, .toggle input:focus-visible + span { outline: 3px solid var(--main); outline-offset: 2px; }
 
-.small-notes { margin: 0; padding-left: 1.1em; font-size: 0.78rem; line-height: 1.65; color: var(--ink-sub); display: grid; gap: 2px; }
+.small-notes { margin: 0; padding-left: 1.1em; font-size: .85rem; line-height: 1.65; color: var(--ink-sub); display: grid; gap: 2px; }
 
 .cta {
   width: 100%;
@@ -283,7 +283,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
   font-size: 1.02rem;
   line-height: 1.5;
 }
-.school-meta { margin: 0; font-size: 0.78rem; color: var(--ink-sub); }
+.school-meta { margin: 0; font-size: .85rem; color: var(--ink-sub); }
 .school-meta a { color: var(--main-ink); }
 
 .rows { margin: 0; display: grid; }
@@ -298,8 +298,8 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 .row:first-child { border-top: none; }
 .row dt { font-weight: 700; font-size: 0.92rem; }
 .row dd { margin: 0; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.row dd .unit { font-weight: 400; font-size: 0.78rem; color: var(--ink-sub); margin-left: 2px; }
-.row .row-sub { grid-column: 1 / -1; margin: 0; font-size: 0.78rem; color: var(--ink-sub); line-height: 1.6; }
+.row dd .unit { font-weight: 400; font-size: .85rem; color: var(--ink-sub); margin-left: 2px; }
+.row .row-sub { grid-column: 1 / -1; margin: 0; font-size: .85rem; color: var(--ink-sub); line-height: 1.6; }
 .row.is-subtotal { border-top: 2px solid var(--line); }
 .row.is-subtotal dt, .row.is-subtotal dd { color: var(--main-ink); }
 .row .ask { color: var(--ink-sub); font-weight: 400; font-size: 0.85rem; white-space: normal; }
@@ -350,7 +350,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 .site-footer {
   background: var(--soft);
   padding-block: 18px 28px;
-  font-size: 0.75rem;
+  font-size: .85rem;
   color: var(--ink-sub);
 }
 .site-footer p { margin: 0; }
@@ -373,20 +373,20 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
   min-width: 0;
 }
 .transport-school { margin: 0; font-weight: 700; font-size: 0.9rem; line-height: 1.5; }
-.transport-note { margin: 0; font-size: 0.78rem; line-height: 1.6; color: var(--ink-sub); }
+.transport-note { margin: 0; font-size: .85rem; line-height: 1.6; color: var(--ink-sub); }
 .segmented.is-compact span { min-width: 72px; padding: 6px 12px; font-size: 0.88rem; }
 .segment.is-unavailable { cursor: not-allowed; }
 .segment.is-unavailable span { color: #a3abb0; border-style: dashed; background: var(--paper); }
 .airport-field { margin-top: 6px; }
-.field-hint-block { margin: 0; font-size: 0.78rem; color: var(--ink-sub); }
+.field-hint-block { margin: 0; font-size: .85rem; color: var(--ink-sub); }
 
 /* ---------- 結果: 学校ごとの注記 ---------- */
-.school-note { margin: 0; font-size: 0.78rem; color: var(--ink-sub); }
+.school-note { margin: 0; font-size: .85rem; color: var(--ink-sub); }
 .row .row-sub strong { color: var(--ink); }
 .info-box.is-notes strong { color: var(--ink); }
-.privacy-note { margin: -10px 0 0; font-size: 0.74rem; color: var(--ink-sub); text-align: center; }
+.privacy-note { margin: -10px 0 0; font-size: .85rem; color: var(--ink-sub); text-align: center; }
 .transport-choice { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-.choice-label { font-size: 0.78rem; font-weight: 700; color: var(--ink-sub); min-width: 4.5em; }
+.choice-label { font-size: .85rem; font-weight: 700; color: var(--ink-sub); min-width: 4.5em; }
 
 /* ---------- 地図から探す(Googleマイマップの埋め込み) ----------
    見本(chiiki-mirai-guide/events.html)と同じ形。色はこのサイトの変数に置き換え:
@@ -408,17 +408,17 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 /* ---------- 留学後: 初年度の費用(項目のみ)・月々の生活費(学校ページの明細) ---------- */
 .detail-block { display: grid; gap: 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
 .detail-block h5 { margin: 0; font-size: 0.92rem; }
-.detail-src { font-weight: 400; font-size: 0.78rem; color: var(--ink-sub); }
+.detail-src { font-weight: 400; font-size: .85rem; color: var(--ink-sub); }
 .detail-lead { margin: 0; font-size: 0.85rem; line-height: 1.65; }
 .detail-lead a { color: var(--main-ink); }
 .detail-lead .ask { color: var(--ink-sub); }
-.detail-note { margin: 0; font-size: 0.78rem; line-height: 1.65; color: var(--ink-sub); }
+.detail-note { margin: 0; font-size: .85rem; line-height: 1.65; color: var(--ink-sub); }
 .item-tags { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .item-tags li { font-size: 0.82rem; line-height: 1.5; padding: 4px 10px; border-radius: 999px; background: var(--main-tint); color: var(--main-ink); }
 .detail-block .rows .row dt { font-weight: 400; }
 .detail-block .rows .row.is-subtotal dt { font-weight: 700; }
 .badges { display: inline-flex; flex-wrap: wrap; gap: 4px; }
-.badge { font-size: 0.74rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.badge { font-size: .85rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
 
 /* ---------- TOP: このシミュレーターでわかること ---------- */
 .intro { display: grid; gap: 8px; font-size: 0.92rem; line-height: 1.8; }
@@ -453,7 +453,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
   position: absolute; left: 0; top: 1px;
   width: 22px; height: 22px; border-radius: 50%;
   background: var(--accent); color: var(--ink);
-  font-weight: 700; font-size: 0.8rem; line-height: 22px; text-align: center;
+  font-weight: 700; font-size: .85rem; line-height: 22px; text-align: center;
 }
 
 /* ---------- 留学後: 他に考えておくべき費用 ---------- */
@@ -469,7 +469,7 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 }
 .map-step-no {
   display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
-  background: var(--line); color: var(--ink); font-size: 0.8rem; flex: none;
+  background: var(--line); color: var(--ink); font-size: .85rem; flex: none;
 }
 .map-step.is-active { border-color: var(--main); background: var(--main-tint); color: var(--main-ink); }
 .map-step.is-active .map-step-no { background: var(--main); color: #fff; }
@@ -488,20 +488,20 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 }
 .selected-text { min-width: 0; }
 .selected-name { margin: 0; font-weight: 700; font-size: 0.9rem; line-height: 1.5; }
-.selected-meta { margin: 0; font-size: 0.8rem; color: var(--ink-sub); }
+.selected-meta { margin: 0; font-size: .85rem; color: var(--ink-sub); }
 .selected-actions { display: flex; gap: 6px; flex: none; }
 .selected-actions button {
   padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper);
-  font-size: 0.8rem; cursor: pointer;
+  font-size: .85rem; cursor: pointer;
 }
 
 /* 地図の吹き出し(学校のピン) */
 .pop { font-family: var(--font-body); color: var(--ink); display: grid; gap: 4px; min-width: 220px; }
 .pop p, .leaflet-popup-content .pop p { margin: 0; }
 .pop-name { font-weight: 700; font-size: 0.95rem; line-height: 1.45; }
-.pop-meta { font-size: 0.78rem; color: var(--ink-sub); }
+.pop-meta { font-size: .85rem; color: var(--ink-sub); }
 .pop-meta a { color: var(--main-ink); }
-.pop-label { margin-top: 6px !important; font-size: 0.78rem; font-weight: 700; }
+.pop-label { margin-top: 6px !important; font-size: .85rem; font-weight: 700; }
 .pop-label span { font-weight: 400; color: var(--ink-sub); }
 .pop-seg { display: flex; gap: 6px; }
 .pop-seg button {
@@ -510,14 +510,14 @@ main.wrap { padding-block: 20px 40px; display: grid; gap: 28px; }
 }
 .pop-seg button[aria-pressed="true"] { border-color: var(--main); background: var(--main); color: #fff; font-weight: 700; }
 .pop-seg button:disabled { color: #a3abb0; border-style: dashed; cursor: not-allowed; background: var(--paper); }
-.pop-note { font-size: 0.74rem; color: var(--ink-sub); line-height: 1.5; }
-.pop-error { font-size: 0.78rem; color: var(--error); }
+.pop-note { font-size: .85rem; color: var(--ink-sub); line-height: 1.5; }
+.pop-error { font-size: .85rem; color: var(--error); }
 .pop-actions { display: grid; gap: 6px; margin-top: 8px; }
 .pop-add {
   padding: 9px; border: none; border-radius: 999px; background: var(--accent); color: var(--ink);
   font-weight: 700; font-size: 0.9rem; cursor: pointer;
 }
-.pop-remove { padding: 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); font-size: 0.8rem; cursor: pointer; }
+.pop-remove { padding: 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); font-size: .85rem; cursor: pointer; }
 
 /* 地理院地図のときの「お住まいの場所」の印 */
 .home-pin span {
@@ -548,11 +548,11 @@ main.wrap { display: grid; gap: 22px; padding-block: 18px 36px; }
 .sim-no {
   display: inline-grid; place-items: center; flex: none;
   width: 24px; height: 24px; border-radius: 50%;
-  background: var(--main); color: #fff; font-size: 0.8rem; font-weight: 700;
+  background: var(--main); color: #fff; font-size: .85rem; font-weight: 700;
 }
 .sim-card .select { width: 100%; min-height: 48px; font-size: 1rem; }
 .sim-card .select:disabled { background: var(--soft); color: var(--ink-sub); }
-.sim-foot { margin: 0; font-size: 0.78rem; line-height: 1.7; color: var(--ink-sub); text-align: center; }
+.sim-foot { margin: 0; font-size: .85rem; line-height: 1.7; color: var(--ink-sub); text-align: center; }
 .sim-foot a { color: var(--main-ink); white-space: nowrap; }
 
 /* 結果 */
@@ -561,22 +561,22 @@ main.wrap { display: grid; gap: 22px; padding-block: 18px 36px; }
 .cost-section:first-of-type { border-top: none; padding-top: 0; }
 .cost-section h4 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 1rem; }
 .cost-section h5 { margin: 8px 0 0; font-size: 0.85rem; color: var(--ink-sub); }
-.cost-tag { flex: none; font-size: 0.72rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+.cost-tag { flex: none; font-size: .85rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
 .cost-tag.is-monthly { background: var(--main); color: #fff; }
 .cost-tag.is-once { background: var(--accent); color: var(--ink); }
 .cost-tag.is-sometimes { background: var(--soft); color: var(--ink); border: 1px solid var(--line); }
 .row dd .zero { color: var(--main-ink); font-size: 1.05rem; }
 .row .row-sub a { color: var(--main-ink); }
 .more { margin-top: 6px; }
-.more summary { cursor: pointer; color: var(--main-ink); font-size: 0.8rem; }
-.more-list { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 0.8rem; }
+.more summary { cursor: pointer; color: var(--main-ink); font-size: .85rem; }
+.more-list { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: .85rem; }
 .more-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 10px; color: var(--ink); }
 .more-list small { grid-column: 1 / -1; color: var(--ink-sub); }
 
 .info-box.is-good { background: var(--accent-tint); }
 .info-box.is-good li { padding-left: 1em; text-indent: -1em; }
 .info-box.is-good li::before { content: "・"; }
-.info-box.is-good .school-note { text-indent: 0; padding-left: 0; font-size: 0.8rem; color: var(--ink-sub); }
+.info-box.is-good .school-note { text-indent: 0; padding-left: 0; font-size: .85rem; color: var(--ink-sub); }
 .info-box.is-good .school-note::before { content: none; }
 .info-box.is-good .school-note strong { display: block; color: var(--ink); }
 
@@ -643,13 +643,13 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .total-label { margin: 0; font-size: .85rem; font-weight: 700; color: var(--main); }
 .total-value { margin: 2px 0 6px; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.6rem, 6.5vw, 2rem); line-height: 1.3; color: var(--main); overflow-wrap: anywhere; }
 .total-value .unit { font-size: .55em; margin-left: 2px; }
-.total-notes { margin: 0; padding-left: 1.1em; font-size: .78rem; color: var(--ink-sub); line-height: 1.6; }
+.total-notes { margin: 0; padding-left: 1.1em; font-size: .85rem; color: var(--ink-sub); line-height: 1.6; }
 .total-box.is-na .total-na { margin: 4px 0 0; font-size: .9rem; }
 
 /* ---------- 帰省の交通費: Googleマップで調べるボタン ---------- */
 .route-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 10px; padding: 12px 18px; border: 2px solid var(--main); border-radius: 999px; background: var(--paper); color: var(--main); font-weight: 700; font-size: .95rem; line-height: 1.4; text-decoration: none; text-align: left; }
 .route-btn svg { flex: none; }
-.route-btn small { display: block; font-size: .72rem; font-weight: 500; color: var(--ink-sub); }
+.route-btn small { display: block; font-size: .85rem; font-weight: 500; color: var(--ink-sub); }
 .route-btn:hover, .route-btn:focus-visible { background: var(--main-tint); }
 .route-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
@@ -669,11 +669,11 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .cost-section { gap: 8px; padding-top: 22px; margin-top: 6px; border-top: none; }
 .cost-section:first-of-type { padding-top: 4px; margin-top: 0; }
 .cost-section h4 { margin: 0 0 4px; padding: 10px 14px; border-radius: var(--radius); background: var(--main); color: #fff; font-family: var(--font-display); font-size: 1.15rem; line-height: 1.4; letter-spacing: .06em; gap: 10px; }
-.cost-section h4 .cost-tag { font-size: .78rem; padding: 3px 11px; }
+.cost-section h4 .cost-tag { font-size: .85rem; padding: 3px 11px; }
 .cost-section h4 .cost-tag.is-monthly { background: #fff; color: var(--main); }
 @media (max-width: 420px) {
   .cost-section h4 { font-size: 1.02rem; letter-spacing: .02em; padding: 10px 12px; gap: 8px; }
-  .cost-section h4 .cost-tag { font-size: .72rem; padding: 3px 9px; }
+  .cost-section h4 .cost-tag { font-size: .85rem; padding: 3px 9px; }
 }
 
 /* ---------- 行き方ページ(route/) ---------- */
@@ -684,3 +684,18 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .route-out .route-btn:hover, .route-out .route-btn:focus-visible { background: var(--deep); }
 .route-sub-link { justify-self: center; font-size: .85rem; color: var(--main); text-underline-offset: 3px; }
 .site-footer .footer-links a.is-internal::after { content: ""; }
+
+/* 学校ページ(費用の欄)へのボタン 2026-11-21 */
+.school-link-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 8px 16px; border: 2px solid var(--main); border-radius: 999px; background: var(--paper); color: var(--main); font-weight: 700; font-size: .9rem; line-height: 1.4; text-decoration: none; }
+.school-link-btn:hover, .school-link-btn:focus-visible { background: var(--main-tint); }
+.school-link-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.school-link-wrap { margin: 12px 0 0; }
+.checklist-lead { margin: 0; font-size: .85rem; line-height: 1.65; color: var(--ink-sub); }
+.once-rows dt { white-space: nowrap; }
+.once-rows .ask { text-align: right; }
+.route-btn { font-size: .88rem; padding: 12px 14px; }
+.once-rows .row { grid-template-columns: auto minmax(0, 1fr); }
+.once-rows dd { white-space: normal; }
+.ask .nb { display: inline-block; }
+dt .nb { display: inline-block; }
+.row .ask { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; max-width: 10.5em; text-align: right; }
