@@ -664,3 +664,14 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .once-rows dt { font-weight: 500; }
 .ask-link { font-size: .85rem; font-weight: 500; color: var(--main); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .ask-link:hover { opacity: .8; }
+
+/* ---------- 費用の大見出し(毎月／最初だけ／年に何回か)をはっきりさせる ---------- */
+.cost-section { gap: 8px; padding-top: 22px; margin-top: 6px; border-top: none; }
+.cost-section:first-of-type { padding-top: 4px; margin-top: 0; }
+.cost-section h4 { margin: 0 0 4px; padding: 10px 14px; border-radius: var(--radius); background: var(--main); color: #fff; font-family: var(--font-display); font-size: 1.15rem; line-height: 1.4; letter-spacing: .06em; gap: 10px; }
+.cost-section h4 .cost-tag { font-size: .78rem; padding: 3px 11px; }
+.cost-section h4 .cost-tag.is-monthly { background: #fff; color: var(--main); }
+@media (max-width: 420px) {
+  .cost-section h4 { font-size: 1.02rem; letter-spacing: .02em; padding: 10px 12px; gap: 8px; }
+  .cost-section h4 .cost-tag { font-size: .72rem; padding: 3px 9px; }
+}
