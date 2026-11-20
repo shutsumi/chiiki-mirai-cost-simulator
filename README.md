@@ -131,8 +131,8 @@ python3 -m http.server 8000
 
 GitHub Pages は CSS・JS を最大10分ブラウザに保存させる。`docs/index.html` で `style.css?v=…`・`config.js?v=…`・`app.js?v=…` と版番号をつけているので、**CSS・JS を変えたら、この `v=` の値を上げてから push する**(上げ忘れると、開き直しても古い表示のままになる)
 
-## 別ページ: 自宅から学校までの行き方(`docs/route/`)
+## 別ツール: 自宅から学校までの行き方
 
-費用の計算を外し、都道府県と学校を選ぶとGoogleマップのルート検索を開くボタンだけを出すページ(2026-11-20追加)
-公開URLは費用シミュレーターの後ろに `route/` をつけたもの
-学校データ(`docs/data/schools.json`)と見た目(`docs/style.css`)は費用シミュレーターと共通、利用の記録はしていない
+https://shutsumi.github.io/chiiki-mirai/route/ (リポジトリ `shutsumi/chiiki-mirai`、手元は `地域みらい留学/行き方ページ/`)
+2026-11-20 にこのリポジトリの `docs/route/` で作り、同日に独立させた、`docs/route/index.html` は新しいURLへ移動させるだけのページとして残している
+学校データ(`docs/data/schools.json`)と `docs/style.css` を変えたら、行き方ページ側にもコピーし直す
