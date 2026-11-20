@@ -675,3 +675,12 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
   .cost-section h4 { font-size: 1.02rem; letter-spacing: .02em; padding: 10px 12px; gap: 8px; }
   .cost-section h4 .cost-tag { font-size: .72rem; padding: 3px 9px; }
 }
+
+/* ---------- 行き方ページ(route/) ---------- */
+.route-out { display: grid; gap: 8px; padding-top: 4px; }
+.route-school { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--main); }
+.route-out .route-btn { margin-top: 0; background: var(--main); color: #fff; border-color: var(--main); padding: 14px 18px; font-size: 1rem; }
+.route-out .route-btn small { color: rgba(255,255,255,.85); }
+.route-out .route-btn:hover, .route-out .route-btn:focus-visible { background: var(--deep); }
+.route-sub-link { justify-self: center; font-size: .85rem; color: var(--main); text-underline-offset: 3px; }
+.site-footer .footer-links a.is-internal::after { content: ""; }

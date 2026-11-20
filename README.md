@@ -130,3 +130,9 @@ python3 -m http.server 8000
 ## 公開のときの注意
 
 GitHub Pages は CSS・JS を最大10分ブラウザに保存させる。`docs/index.html` で `style.css?v=…`・`config.js?v=…`・`app.js?v=…` と版番号をつけているので、**CSS・JS を変えたら、この `v=` の値を上げてから push する**(上げ忘れると、開き直しても古い表示のままになる)
+
+## 別ページ: 自宅から学校までの行き方(`docs/route/`)
+
+費用の計算を外し、都道府県と学校を選ぶとGoogleマップのルート検索を開くボタンだけを出すページ(2026-11-20追加)
+公開URLは費用シミュレーターの後ろに `route/` をつけたもの
+学校データ(`docs/data/schools.json`)と見た目(`docs/style.css`)は費用シミュレーターと共通、利用の記録はしていない
