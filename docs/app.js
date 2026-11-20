@@ -182,7 +182,6 @@
     $("result").innerHTML = `
       <article class="school-block">
         <h3 class="school-name">${esc(s.name)}</h3>
-        <p class="school-meta"><a class="school-link-btn" href="${schoolUrl(s.id)}#cost" target="_blank" rel="noopener">学校ページの学費・生活費を見る ↗</a></p>
 
         <section class="cost-section">
           <h4><span class="cost-tag is-monthly">毎月</span>毎月かかる費用の目安</h4>
@@ -204,7 +203,6 @@
             ${row("引っ越し", '<span class="ask">ご家庭による</span>')}
           </dl>
           <p class="detail-lead">学校ページに載っている金額です、年度によって変わることがあります<br>支払いの時期は、合格後に学校から案内があります</p>
-          <p class="school-link-wrap"><a class="school-link-btn" href="${schoolUrl(s.id)}#cost" target="_blank" rel="noopener">学校ページの学費・生活費を見る ↗</a></p>
         </section>
 
         <section class="cost-section">
@@ -272,6 +270,10 @@
     });
     const out = $("result");
     out.hidden = false;
+    // 学校ページ(学費・生活費の欄)へのボタンを画面の最下部に固定して出す(2026-11-21)
+    $("school-bar-link").href = schoolUrl(r.school.id) + "#cost";
+    $("school-bar").hidden = false;
+    document.body.classList.add("has-school-bar");
     out.focus({ preventScroll: true });
     out.scrollIntoView({ behavior: "smooth", block: "start" });
   }

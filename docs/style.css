@@ -699,3 +699,8 @@ h2, h3, h4, h5, .section-title, .school-name, .about h2 { color: var(--main); le
 .ask .nb { display: inline-block; }
 dt .nb { display: inline-block; }
 .row .ask { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; max-width: 10.5em; text-align: right; }
+/* 学校ページへのボタンを画面の最下部に固定 2026-11-21 */
+.school-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; justify-content: center; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.94); border-top: 1px solid var(--line); }
+.school-bar .school-link-btn { margin: 0; width: 100%; max-width: 420px; justify-content: center; padding: 12px 16px; background: var(--main); color: #fff; border-color: var(--main); font-size: .95rem; }
+.school-bar .school-link-btn:hover, .school-bar .school-link-btn:focus-visible { background: var(--deep); }
+body.has-school-bar { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
