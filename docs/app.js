@@ -208,7 +208,7 @@
         <section class="cost-section">
           <h4><span class="cost-tag is-sometimes">年に何回か</span>ときどきかかる費用</h4>
           <dl class="rows">
-            ${row("帰省の交通費", '<span class="ask">帰省1回ごと</span>', `GW・夏休み・冬休み・春休みなど、帰省する回数の分だけかかります<a class="route-btn" href="${routeUrl(s)}" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>自宅からの行き方と運賃を調べる<small>Googleマップが開きます</small></span></a>`)}
+            ${row("帰省の交通費", '<span class="ask">帰省1回ごと</span>', `GW・夏休み・冬休み・春休みなど、帰省する回数の分だけかかります<a class="route-btn" href="${routeUrl(s)}" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span><span class="nb">自宅からの</span><span class="nb">行き方と運賃を調べる</span><small>Googleマップが開きます</small></span></a>`)}
             ${row("部活の遠征・行事", '<span class="ask">学校による</span>', "部活の遠征費や、修学旅行の積立以外の費用など")}
             ${row("冬の光熱費", '<span class="ask">地域による</span>', "寒い地域では、冬に暖房代が上がることがあります")}
           </dl>

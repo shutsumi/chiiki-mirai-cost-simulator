@@ -704,3 +704,9 @@ dt .nb { display: inline-block; }
 .school-bar .school-link-btn { margin: 0; width: 100%; max-width: 420px; justify-content: center; padding: 12px 16px; background: var(--main); color: #fff; border-color: var(--main); font-size: .95rem; }
 .school-bar .school-link-btn:hover, .school-bar .school-link-btn:focus-visible { background: var(--deep); }
 body.has-school-bar { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+/* 行き方ボタンを黄色で目立たせる(保護者に好評のため 2026-11-21) */
+.route-btn { background: var(--accent); color: var(--deep); border: 2px solid var(--deep); padding: 14px 16px; font-size: .95rem; }
+.route-btn small { color: var(--deep); }
+.route-btn:hover, .route-btn:focus-visible { background: #fff27a; }
+.route-btn:focus-visible { outline: 3px solid var(--main); }
+.route-btn .nb { display: inline-block; }
