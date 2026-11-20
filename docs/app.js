@@ -70,6 +70,11 @@
   const yen = (n) => "￥" + fmt(n);
   const range = (lo, hi) => (round100(lo) === round100(hi) ? `${yen(round100(lo))}〜` : `${yen(round100(lo))}〜${yen(round100(hi))}`);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // 学校ページから取った文章の中の金額に「,」を入れる(77000 → 77,000)。年(2026年)・電話番号・URLの中の数字には入れない(2026-11-21)
+  //   古いiPhoneのSafariは後読み (?<!) が使えずページ全体が動かなくなるため、前の1文字ごと拾って戻す
+  const commify = (s) => String(s).split(/(0\d{1,4}-\d{1,4}-\d{3,4})/).map((part, i) => i % 2 ? part
+    : part.replace(/(^|[^\dA-Za-z,.\/])(\d{4,})(?![\d,.A-Za-z]|年)/g, (m, pre, n) => pre + n.replace(/\B(?=(\d{3})+(?!\d))/g, ","))).join("");
+  const txt = (s) => commify(esc(s));
   const schoolUrl = (id) => "https://c-mirai.jp/schools/" + encodeURIComponent(id);
   const routeUrl = (s) => "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(s.name);
   const ASK = '<span class="ask"><span class="nb">学校に</span><span class="nb">お問い合わせください</span></span>';
@@ -110,8 +115,8 @@
     if (badges.length) subs.push(`<span class="badges">${badges.map((b) => `<span class="badge">${esc(b)}</span>`).join("")}</span>`);
     if (s.housing && s.housing.length) subs.push(`住まいの種類：${s.housing.map(esc).join("・")}`);
     subs.push("学校ページの金額です、住まいの種類や年度によって変わります");
-    const detailRows = lv.items.map((it) => `<li><span>${esc(it.label.replace(/（月額\/円）/, ""))}</span><span>${esc(it.value === "-円" ? "－" : it.value)}</span>${it.desc ? `<small>${esc(it.desc)}</small>` : ""}</li>`).join("");
-    const details = `<details class="more"><summary>内訳を見る</summary><ul class="more-list">${detailRows}</ul>${lv.notes ? `<p class="detail-note">${esc(lv.notes)}</p>` : ""}</details>`;
+    const detailRows = lv.items.map((it) => `<li><span>${esc(it.label.replace(/（月額\/円）/, ""))}</span><span>${txt(it.value === "-円" ? "－" : it.value)}</span>${it.desc ? `<small>${txt(it.desc)}</small>` : ""}</li>`).join("");
+    const details = `<details class="more"><summary>内訳を見る</summary><ul class="more-list">${detailRows}</ul>${lv.notes ? `<p class="detail-note">${txt(lv.notes)}</p>` : ""}</details>`;
     return row("寮費・生活費", `${yen(s.monthly)}〜${perMonth}`, subs.join("<br>") + details);
   }
 
@@ -220,7 +225,7 @@
         <ul>
           <li>授業料は、国の就学支援金の申請で実質0円になります</li>
           <li>町や村から、寮費・帰省費・入学準備などの補助が出る学校があります</li>
-          ${s.fyNotes ? `<li class="school-note"><strong>学校ページの補足</strong>${esc(s.fyNotes)}</li>` : ""}
+          ${s.fyNotes ? `<li class="school-note"><strong>学校ページの補足</strong>${txt(s.fyNotes)}</li>` : ""}
         </ul>
       </section>
 
